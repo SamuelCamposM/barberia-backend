@@ -35,9 +35,8 @@ const UsuarioSchema = new Schema(
       ref: "Rol",
     },
     estado: {
-      type: String,
-      enum: ["activo", "inactivo"], // Aquí defines los valores permitidos
-      default: "activo", // Valor por defecto
+      type: Boolean, // Aquí defines los valores permitidos
+      default: true, // Valor por defecto
     },
   },
   { timestamps: true }
