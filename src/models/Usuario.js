@@ -6,6 +6,17 @@ const UsuarioSchema = new Schema(
       type: String,
       required: true,
     },
+    lastname: {
+      type: String,
+      required: true,
+    },
+    tel: {
+      type: String,
+      required: true,
+    },
+    photo: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
@@ -19,9 +30,14 @@ const UsuarioSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    roles: {
+    rol: {
       type: Schema.Types.ObjectId,
       ref: "Rol",
+    },
+    estado: {
+      type: String,
+      enum: ["activo", "inactivo"], // Aquí defines los valores permitidos
+      default: "activo", // Valor por defecto
     },
   },
   { timestamps: true }
