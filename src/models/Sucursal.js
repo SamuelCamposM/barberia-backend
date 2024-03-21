@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const CitaSchema = new Schema(
+const SucursalSchema = new Schema(
   {
     name: {
       type: String,
@@ -39,4 +39,4 @@ const CitaSchema = new Schema(
   }
 );
 
-export const CitaModel = model("Cita", CitaSchema);
+export const SucursalModel = model("Sucursal", SucursalSchema);

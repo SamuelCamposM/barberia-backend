@@ -13,6 +13,16 @@ const CitaSchema = new Schema(
     description: {
       type: String,
     },
+    sucursal: {
+      type: Schema.Types.ObjectId,
+      ref: "Sucursal",
+      required: true,
+    },
+    empleado: {
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
+    },
     estado: {
       type: String,
       enum: ["ACTIVO", "PENDIENTE", "FINALIZADA"], // Aquí defines los valores permitidos

@@ -19,6 +19,7 @@ export const createUser = async (req, res = response) => {
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
     usuario.password = bcryptjs.hashSync(usuario.password, salt);
+    console.log({ usuario });
     await usuario.save();
 
     //TODO: GENERAR JWT
@@ -29,7 +30,7 @@ export const createUser = async (req, res = response) => {
       token,
     });
   } catch (error) {
-    console.log(error);
+    console.log({ error });
     res.status(500).json({
       ok: false,
       msg: "Por favor hable con el administrador",

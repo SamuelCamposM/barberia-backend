@@ -1,6 +1,11 @@
 import { Schema, model } from "mongoose";
+import { roles } from "../helpers/userProps";
 const PageSchema = new Schema(
   {
+    componente: {
+      type: String,
+      required: true,
+    },
     nombre: {
       type: String,
       required: true,
@@ -18,29 +23,29 @@ const PageSchema = new Schema(
       required: 1,
     },
     delete: {
-      type: [Schema.Types.ObjectId],
-      ref: "Rol",
-      default: [],
+      type: [String],
+      enum: roles,
+      default: ["GERENTE"],
     },
     update: {
-      type: [Schema.Types.ObjectId],
-      ref: "Rol",
-      default: [],
+      type: [String],
+      enum: roles,
+      default: ["GERENTE"],
     },
     insert: {
-      type: [Schema.Types.ObjectId],
-      ref: "Rol",
-      default: [],
+      type: [String],
+      enum: roles,
+      default: ["GERENTE"],
     },
     select: {
-      type: [Schema.Types.ObjectId],
-      ref: "Rol",
-      default: [],
+      type: [String],
+      enum: roles,
+      default: ["GERENTE"],
     },
     ver: {
-      type: [Schema.Types.ObjectId],
-      ref: "Rol",
-      default: [],
+      type: [String],
+      enum: roles,
+      default: ["GERENTE"],
     },
   },
   { timestamps: true }

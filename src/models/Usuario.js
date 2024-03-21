@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { roles } from "../helpers/userProps";
 
 const UsuarioSchema = new Schema(
   {
@@ -31,8 +32,9 @@ const UsuarioSchema = new Schema(
       default: false,
     },
     rol: {
-      type: Schema.Types.ObjectId,
-      ref: "Rol",
+      type: String,
+      enum: roles,
+      default: "CLIENTE",
     },
     estado: {
       type: Boolean, // Aquí defines los valores permitidos
