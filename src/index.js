@@ -4,7 +4,7 @@ import cors from "cors";
 config();
 
 import { dbConnection } from "./db/config";
-import { chatSocket } from "./sockets";
+import { chatSocket, pageSocket } from "./sockets";
 import { authRouter, pagesRouter } from "./routes";
 import { mensajesRouter } from "./routes/mensajes";
 import { createServer } from "http";
@@ -32,6 +32,7 @@ const io = socketio(server, {
 });
 
 chatSocket(io);
+pageSocket(io);
 
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)
