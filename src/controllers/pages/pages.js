@@ -1,5 +1,5 @@
 import { response } from "express";
-import { PageModel, RolModel } from "../models";
+import { PageModel, RolModel } from "../../models";
 
 export const getPages = async (req, res = response) => {
   try {

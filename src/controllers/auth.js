@@ -19,7 +19,6 @@ export const createUser = async (req, res = response) => {
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
     usuario.password = bcryptjs.hashSync(usuario.password, salt);
-    console.log({ usuario });
     await usuario.save();
 
     //TODO: GENERAR JWT
@@ -40,7 +39,6 @@ export const createUser = async (req, res = response) => {
 
 export const loginUser = async (req, res = response) => {
   const { email, password } = req.body;
-  console.log({ body: req.body });
   try {
     const usuario = await UsuarioModel.findOne({ email });
     if (!usuario) {
