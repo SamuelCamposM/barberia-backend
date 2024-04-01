@@ -6,45 +6,98 @@ export const getDepto = async (req, res = response) => {
       pagination: { page, limit },
       busqueda,
     } = req.body;
+    // const aggregation = DeptoModel.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "municipios",
+    //       let: { depto_id: "$_id" },
+    //       pipeline: [
+    //         {
+    //           $match: {
+    //             $expr: {
+    //               $and: [
+    //                 { $eq: ["$depto", "$$depto_id"] },
+    //                 {
+    //                   $or: [
+    //                     // Busca por el nombre del municipio
+    //                     {
+    //                       $regexMatch: {
+    //                         input: "$name",
+    //                         regex: new RegExp(busqueda, "i"),
+    //                       },
+    //                     },
+    //                   ],
+    //                 },
+    //               ],
+    //             },
+    //           },
+    //         },
+    //         {
+    //           $project: {
+    //             _id: 1,
+    //             // name: 1,
+    //             // depto: 1,
+    //           },
+    //         },
+    //         // {
+    //         //   $sort: {
+    //         //     name: -1, // 1 para ascendente, -1 para descendente
+    //         //   },
+    //         // },
+    //       ],
+    //       as: "filteredMunicipios",
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       totalMunicipios: { $size: "$filteredMunicipios" },
+    //       _id: true,
+    //       name: true,
+    //       // filteredMunicipios: -1,
+    //     },
+    //   },
+    //   {
+    //     $match: {
+    //       $or: [
+    //         // Busca por el nombre del departamento
+    //         { name: new RegExp(busqueda, "i") },
+    //         // Si totalMunicipios > 0, incluye el departamento
+    //         { totalMunicipios: { $gt: 0 } },
+    //       ],
+    //     },
+    //   },
+    //   {
+    //     $sort: {
+    //       name: 1, // 1 para ascendente, -1 para descendente
+    //     },
+    //   },
+    // ]);
+
+    // const result = await DeptoModel.aggregatePaginate(aggregation, {
+    //   page,
+    //   limit,
+    // });
+    // retrn res.status(200).json({ result });
     const aggregation = DeptoModel.aggregate([
+      {
+        $match: {
+          $or: [
+            // Busca por el nombre del departamento
+            { name: new RegExp(busqueda, "i") },
+            // Si totalMunicipios > 0, incluye el departamento
+          ],
+        },
+      },
+      {
+        $sort: {
+          name: 1, // 1 para ascendente, -1 para descendente
+        },
+      },
       {
         $lookup: {
           from: "municipios",
-          let: { depto_id: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$depto", "$$depto_id"] },
-                    {
-                      $or: [
-                        // Busca por el nombre del municipio
-                        {
-                          $regexMatch: {
-                            input: "$name",
-                            regex: new RegExp(busqueda, "i"),
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              $project: {
-                _id: 1,
-                // name: 1,
-                // depto: 1,
-              },
-            },
-            // {
-            //   $sort: {
-            //     name: -1, // 1 para ascendente, -1 para descendente
-            //   },
-            // },
-          ],
+          localField: "_id",
+          foreignField: "depto",
           as: "filteredMunicipios",
         },
       },
@@ -54,21 +107,6 @@ export const getDepto = async (req, res = response) => {
           _id: true,
           name: true,
           // filteredMunicipios: -1,
-        },
-      },
-      {
-        $match: {
-          $or: [
-            // Busca por el nombre del departamento
-            { name: new RegExp(busqueda, "i") },
-            // Si totalMunicipios > 0, incluye el departamento
-            { totalMunicipios: { $gt: 0 } },
-          ],
-        },
-      },
-      {
-        $sort: {
-          name: 1, // 1 para ascendente, -1 para descendente
         },
       },
     ]);

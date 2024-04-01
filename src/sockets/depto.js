@@ -42,7 +42,7 @@ export const deptoSocket = (io) => {
         callback({ error, msg: msg || "Hubo un error" });
         return;
       } else {
-        callback({ error, msg: "Elimnado con exito!" });
+        callback({ error, msg: "Eliminado con exito!" });
         io.emit(SocketClientEvent.eliminar, data);
       }
       // SI NO HAY ERROR
