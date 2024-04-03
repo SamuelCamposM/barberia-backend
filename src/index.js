@@ -5,11 +5,12 @@ config();
 
 import { dbConnection } from "./db/config";
 import { chatSocket, deptoSocket, pageSocket } from "./sockets";
-import { authRouter, pagesRouter } from "./routes";
+import { authRouter, municipioRouter, pagesRouter } from "./routes";
 import { mensajesRouter } from "./routes/mensajes";
 import { createServer } from "http";
 import socketio from "socket.io";
 import { deptoRouter } from "./routes/depto";
+import { municipioSocket } from "./sockets/municipio";
 dbConnection();
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/mensajes", mensajesRouter);
 app.use("/api/pages", pagesRouter);
 app.use("/api/depto", deptoRouter);
+app.use("/api/municipio", municipioRouter);
 const server = createServer(app);
 const io = socketio(server, {
   cors: {
@@ -36,6 +38,7 @@ const io = socketio(server, {
 chatSocket(io);
 pageSocket(io);
 deptoSocket(io);
+municipioSocket(io);
 
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)

@@ -1,6 +1,7 @@
-import { DeptoModel, MunicipioModel } from "../../models";
+import { MunicipioModel } from "../../models";
 
-export const getDeptos = async (req, res = response) => {
+// Municipios
+export const getMunicipios = async (req, res = response) => {
   try {
     const {
       pagination: { page, limit },
@@ -127,48 +128,21 @@ export const getDeptos = async (req, res = response) => {
   }
 };
 
-const departamentosElSalvador = [
-  "Ahuachapán",
-  "Cabañas",
-  "Chalatenango",
-  "Cuscatlán",
-  "La Libertad",
-  "La Paz",
-  "La Unión",
-  "Morazán",
-  "San Miguel",
-  "San Salvador",
-  "San Vicente",
-  "Santa Ana",
-  "Sonsonate",
-  "Usulután",
-];
-export const setDepto = async (req, res) => {
-  const insertarDepartamentos = async (departamentos) => {
-    for (let nombre of departamentosElSalvador) {
-      const depto = new DeptoModel({ name: nombre });
-      //   await depto.save();
-    }
-  };
-  await insertarDepartamentos();
-  res.status(200).json({ msg: "si" });
-};
-
 // SOCKET
-export const agregarDepto = async (item) => {
+export const agregarMunicipio = async (item) => {
   try {
-    const newDepto = new DeptoModel(item);
-    await newDepto.save();
-    return { item: newDepto, error: false };
+    const newMunicipio = new MunicipioModel(item);
+    await newMunicipio.save();
+    return { item: newMunicipio, error: false };
   } catch (error) {
     console.log({ error });
     return { error: true, msg: error?.codeName };
   }
 };
 
-export const editarDepto = async (item) => {
+export const editarMunicipio = async (item) => {
   try {
-    await DeptoModel.findOneAndUpdate({ _id: item._id }, item);
+    await MunicipioModel.findOneAndUpdate({ _id: item._id }, item);
     return { error: false };
   } catch (error) {
     console.log({ error });
@@ -176,18 +150,9 @@ export const editarDepto = async (item) => {
   }
 };
 
-export const eliminarDepto = async (item) => {
+export const eliminarMunicipio = async (item) => {
   try {
-    // Verifica si hay municipios asociados
-    const municipios = await MunicipioModel.find({ depto: item._id });
-    if (municipios.length > 0) {
-      return {
-        error: true,
-        msg: "No se puede eliminar el departamento con municipios asociados",
-      };
-    }
-
-    await DeptoModel.deleteOne(item);
+    await MunicipioModel.deleteOne(item);
     return { error: false };
   } catch (error) {
     console.log({ error });
