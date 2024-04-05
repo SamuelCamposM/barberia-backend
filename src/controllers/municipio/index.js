@@ -1,130 +1,50 @@
-import { MunicipioModel } from "../../models";
-
 // Municipios
+import { MunicipioModel } from "../../models";
+import mongoose from "mongoose";
+
 export const getMunicipios = async (req, res = response) => {
   try {
     const {
       pagination: { page, limit },
       sort: { campo, asc },
       busqueda,
+      depto,
     } = req.body;
-    // const aggregation = DeptoModel.aggregate([
-    //   {
-    //     $lookup: {
-    //       from: "municipios",
-    //       let: { depto_id: "$_id" },
-    //       pipeline: [
-    //         {
-    //           $match: {
-    //             $expr: {
-    //               $and: [
-    //                 { $eq: ["$depto", "$$depto_id"] },
-    //                 {
-    //                   $or: [
-    //                     // Busca por el nombre del municipio
-    //                     {
-    //                       $regexMatch: {
-    //                         input: "$name",
-    //                         regex: new RegExp(busqueda, "i"),
-    //                       },
-    //                     },
-    //                   ],
-    //                 },
-    //               ],
-    //             },
-    //           },
-    //         },
-    //         {
-    //           $project: {
-    //             _id: 1,
-    //             // name: 1,
-    //             // depto: 1,
-    //           },
-    //         },
-    //         // {
-    //         //   $sort: {
-    //         //     name: -1, // 1 para ascendente, -1 para descendente
-    //         //   },
-    //         // },
-    //       ],
-    //       as: "filteredMunicipios",
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       totalMunicipios: { $size: "$filteredMunicipios" },
-    //       _id: true,
-    //       name: true,
-    //       // filteredMunicipios: -1,
-    //     },
-    //   },
-    //   {
-    //     $match: {
-    //       $or: [
-    //         // Busca por el nombre del departamento
-    //         { name: new RegExp(busqueda, "i") },
-    //         // Si totalMunicipios > 0, incluye el departamento
-    //         { totalMunicipios: { $gt: 0 } },
-    //       ],
-    //     },
-    //   },
-    //   {
-    //     $sort: {
-    //       name: 1, // 1 para ascendente, -1 para descendente
-    //     },
-    //   },
-    // ]);
 
-    // const result = await DeptoModel.aggregatePaginate(aggregation, {
-    //   page,
-    //   limit,
-    // });
-    // retrn res.status(200).json({ result });
-    const aggregation = DeptoModel.aggregate([
+    const aggregation = MunicipioModel.aggregate([
       {
         $match: {
-          $or: [
-            // Busca por el nombre del departamento
+          $and: [
             { name: new RegExp(busqueda, "i") },
-            // Si totalMunicipios > 0, incluye el departamento
+            { depto: new mongoose.Types.ObjectId(depto) },
           ],
         },
       },
-
-      {
-        $lookup: {
-          from: "municipios",
-          localField: "_id",
-          foreignField: "depto",
-          as: "filteredMunicipios",
-        },
-      },
-
       {
         $project: {
-          totalMunicipios: { $size: "$filteredMunicipios" },
+          depto: true,
           _id: true,
           name: true,
-          // filteredMunicipios: -1,
         },
       },
       {
         $sort: {
-          [campo]: asc ? 1 : -1, // 1 para ascendente, -1 para descendente
+          [campo]: asc ? 1 : -1,
         },
       },
     ]);
 
-    const result = await DeptoModel.aggregatePaginate(aggregation, {
+    const result = await MunicipioModel.aggregatePaginate(aggregation, {
       page,
       limit,
     });
+
     res.status(200).json({ result });
   } catch (error) {
     console.log({ error });
     res
       .status(500)
-      .json({ ok: false, msg: "Hubo un error al obtener las pages" });
+      .json({ ok: false, msg: "Hubo un error al obtener las páginas" });
   }
 };
 

@@ -24,7 +24,7 @@ export const municipioSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Editado con exito!" });
-        io.emit(SocketClientEvent.editar, data);
+        io.emit(`${SocketClientEvent.editar}.${data.depto}`, data);
       }
       // SI NO HAY ERROR
     });
@@ -36,7 +36,7 @@ export const municipioSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Guardado con exito!" });
-        io.emit(SocketClientEvent.agregar, item);
+        io.emit(`${SocketClientEvent.agregar}.${data.depto}`, item);
       }
       // SI NO HAY ERROR
     });
@@ -47,7 +47,7 @@ export const municipioSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Eliminado con exito!" });
-        io.emit(SocketClientEvent.eliminar, data);
+        io.emit(`${SocketClientEvent.eliminar}.${data.depto}`, data);
       }
       // SI NO HAY ERROR
     });
