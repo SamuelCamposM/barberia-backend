@@ -1,8 +1,9 @@
 import { agregarDepto, editarDepto, eliminarDepto } from "../controllers";
-const SocketClientEvent = {
+export const SocketClientDepto = {
   agregar: "cliente:depto-agregar",
   editar: "cliente:depto-editar",
   eliminar: "cliente:depto-eliminar",
+  municipioListener: "cliente:depto-municipio-listener",
 };
 const SocketServerEvent = {
   agregar: "server:depto-agregar",
@@ -20,7 +21,7 @@ export const deptoSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Editado con exito!" });
-        io.emit(SocketClientEvent.editar, data);
+        io.emit(SocketClientDepto.editar, data);
       }
       // SI NO HAY ERROR
     });
@@ -32,7 +33,7 @@ export const deptoSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Guardado con exito!" });
-        io.emit(SocketClientEvent.agregar, item);
+        io.emit(SocketClientDepto.agregar, item);
       }
       // SI NO HAY ERROR
     });
@@ -43,7 +44,7 @@ export const deptoSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Eliminado con exito!" });
-        io.emit(SocketClientEvent.eliminar, data);
+        io.emit(SocketClientDepto.eliminar, data);
       }
       // SI NO HAY ERROR
     });

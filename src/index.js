@@ -4,13 +4,17 @@ import cors from "cors";
 config();
 
 import { dbConnection } from "./db/config";
-import { chatSocket, deptoSocket, pageSocket } from "./sockets";
+import {
+  chatSocket,
+  deptoSocket,
+  pageSocket,
+  municipioSocket,
+} from "./sockets";
 import { authRouter, municipioRouter, pagesRouter } from "./routes";
 import { mensajesRouter } from "./routes/mensajes";
 import { createServer } from "http";
 import socketio from "socket.io";
 import { deptoRouter } from "./routes/depto";
-import { municipioSocket } from "./sockets/municipio";
 dbConnection();
 
 const app = express();
