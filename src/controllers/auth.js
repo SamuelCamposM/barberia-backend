@@ -1,7 +1,7 @@
 import { response } from "express";
 import { UsuarioModel } from "../models";
 import bcryptjs from "bcryptjs";
-import { generarJwt, userProps } from "../helpers";
+import { deleteFile, generarJwt, userProps } from "../helpers";
 
 export const createUser = async (req, res = response) => {
   const { email } = req.body;
@@ -84,4 +84,22 @@ export const renewToken = async (req, res = response) => {
     ...userProps(usuario),
     token,
   });
+};
+
+export const actualizarUsuario = async (req, res) => {
+  const { data, prevUrl } = req.body;
+  try {
+    await UsuarioModel.updateOne({ _id: data.uid }, data);
+    await deleteFile(prevUrl);
+    return res.status(200).json({
+      error: false,
+      msg: "Actualizado con exito",
+    });
+  } catch (error) {
+    console.log({ error });
+    return res.status(400).json({
+      error: true,
+      msg: "Hubo un error",
+    });
+  }
 };

@@ -3,11 +3,17 @@
 import express from "express";
 import { check } from "express-validator";
 
-import { createUser, loginUser, renewToken } from "../controllers";
+import {
+  actualizarUsuario,
+  createUser,
+  loginUser,
+  renewToken,
+} from "../controllers";
 import { validarCampos } from "../middlewares";
 import { validarToken } from "../middlewares/validarToken";
+import { UsuarioModel } from "../models";
+import { deleteFile } from "../helpers";
 export const authRouter = express.Router();
-
 
 authRouter.post(
   "/new",
@@ -31,3 +37,4 @@ authRouter.post(
 );
 
 authRouter.get("/renew", validarToken, renewToken);
+authRouter.post("/edit", validarToken, actualizarUsuario);

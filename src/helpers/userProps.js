@@ -7,6 +7,9 @@ export const userProps = (user) => {
     lastname: user.lastname,
     tel: user.tel,
     uid: user._id,
+    photo: user.photo,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 };
 

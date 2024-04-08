@@ -15,7 +15,15 @@ import { mensajesRouter } from "./routes/mensajes";
 import { createServer } from "http";
 import socketio from "socket.io";
 import { deptoRouter } from "./routes/depto";
+import { v2 as cloudinary } from "cloudinary";
 dbConnection();
+
+// Configura Cloudinary con tus credenciales
+cloudinary.config({
+  cloud_name: process.env.CloudName,
+  api_key: process.env.cloudAPIKey,
+  api_secret: process.env.cloudAPISecret,
+});
 
 const app = express();
 
