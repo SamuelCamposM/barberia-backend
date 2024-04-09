@@ -87,10 +87,19 @@ export const renewToken = async (req, res = response) => {
 };
 
 export const actualizarUsuario = async (req, res) => {
-  const { data, prevUrl } = req.body;
+  const { data, eliminados } = req.body;
   try {
-    await UsuarioModel.updateOne({ _id: data.uid }, data);
-    await deleteFile(prevUrl);
+    eliminados.forEach(async (element) => {
+      await deleteFile(element);
+    });
+
+    // ENCRIPTAR password
+    const salt = bcryptjs.genSaltSync();
+    const password =
+      data.newPassword === ""
+        ? data.password
+        : bcryptjs.hashSync(data.newPassword, salt);
+    await UsuarioModel.updateOne({ _id: data.uid }, { ...data, password });
     return res.status(200).json({
       error: false,
       msg: "Actualizado con exito",
@@ -102,4 +111,13 @@ export const actualizarUsuario = async (req, res) => {
       msg: "Hubo un error",
     });
   }
+};
+export const comparePassword = async (req, res) => {
+  const { uid, newPassword } = req.body;
+  const usuario = await UsuarioModel.findOne({ _id: uid });
+  const validPassword = bcryptjs.compareSync(newPassword, usuario.password);
+  if (validPassword) {
+    return res.status(200).json({ error: false });
+  }
+  return res.status(401).json({ error: true });
 };

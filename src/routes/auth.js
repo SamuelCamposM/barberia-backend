@@ -5,6 +5,7 @@ import { check } from "express-validator";
 
 import {
   actualizarUsuario,
+  comparePassword,
   createUser,
   loginUser,
   renewToken,
@@ -38,3 +39,4 @@ authRouter.post(
 
 authRouter.get("/renew", validarToken, renewToken);
 authRouter.post("/edit", validarToken, actualizarUsuario);
+authRouter.post("/comparePass", comparePassword);
