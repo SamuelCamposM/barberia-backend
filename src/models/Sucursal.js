@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const SucursalSchema = new Schema(
   {
@@ -24,19 +25,10 @@ const SucursalSchema = new Schema(
       ref: "Municipio",
       required: true,
     },
-    rUser: {
-      type: Schema.Types.ObjectId,
-      ref: "Usuario",
-      required: true,
-    },
-    eUser: {
-      type: Schema.Types.ObjectId,
-      ref: "Usuario",
-    },
   },
   {
     timestamps: true,
   }
 );
-
+SucursalSchema.plugin(mongooseAggregatePaginate);
 export const SucursalModel = model("Sucursal", SucursalSchema);

@@ -13,12 +13,18 @@ import {
   deptoSocket,
   pageSocket,
   municipioSocket,
+  sucursalSocket,
 } from "./sockets";
-import { authRouter, municipioRouter, pagesRouter } from "./routes";
-import { mensajesRouter } from "./routes/mensajes";
+import {
+  authRouter,
+  municipioRouter,
+  pagesRouter,
+  mensajesRouter,
+  deptoRouter,
+  sucursalRouter,
+} from "./routes";
 import { createServer } from "http";
 import socketio from "socket.io";
-import { deptoRouter } from "./routes/depto";
 import { v2 as cloudinary } from "cloudinary";
 dbConnection();
 
@@ -42,8 +48,8 @@ app.use("/api/auth", authRouter);
 app.use("/api/mensajes", mensajesRouter);
 app.use("/api/pages", pagesRouter);
 app.use("/api/depto", deptoRouter);
-
 app.use("/api/municipio", municipioRouter);
+app.use("/api/sucursal", sucursalRouter);
 
 app.get("/api/report/pdf", (req, res) => {
   let fonts = {
@@ -470,7 +476,7 @@ chatSocket(io);
 pageSocket(io);
 deptoSocket(io);
 municipioSocket(io);
-
+sucursalSocket(io);
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)
 );

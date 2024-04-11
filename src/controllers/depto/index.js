@@ -127,33 +127,6 @@ export const getDeptos = async (req, res = response) => {
   }
 };
 
-const departamentosElSalvador = [
-  "Ahuachapán",
-  "Cabañas",
-  "Chalatenango",
-  "Cuscatlán",
-  "La Libertad",
-  "La Paz",
-  "La Unión",
-  "Morazán",
-  "San Miguel",
-  "San Salvador",
-  "San Vicente",
-  "Santa Ana",
-  "Sonsonate",
-  "Usulután",
-];
-export const setDepto = async (req, res) => {
-  const insertarDepartamentos = async (departamentos) => {
-    for (let nombre of departamentosElSalvador) {
-      const depto = new DeptoModel({ name: nombre });
-      //   await depto.save();
-    }
-  };
-  await insertarDepartamentos();
-  res.status(200).json({ msg: "si" });
-};
-
 // SOCKET
 export const agregarDepto = async (item) => {
   try {

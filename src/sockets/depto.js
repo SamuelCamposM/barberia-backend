@@ -5,7 +5,7 @@ export const SocketClientDepto = {
   eliminar: "cliente:depto-eliminar",
   municipioListener: "cliente:depto-municipio-listener",
 };
-const SocketServerEvent = {
+const SocketServerDepto = {
   agregar: "server:depto-agregar",
   editar: "server:depto-editar",
   eliminar: "server:depto-eliminar",
@@ -13,7 +13,7 @@ const SocketServerEvent = {
 
 export const deptoSocket = (io) => {
   io.on("connection", async (socket) => {
-    socket.on(SocketServerEvent.editar, async (data, callback) => {
+    socket.on(SocketServerDepto.editar, async (data, callback) => {
       const { error, msg } = await editarDepto(data);
 
       if (error) {
@@ -25,7 +25,7 @@ export const deptoSocket = (io) => {
       }
       // SI NO HAY ERROR
     });
-    socket.on(SocketServerEvent.agregar, async (data, callback) => {
+    socket.on(SocketServerDepto.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarDepto(data);
 
       if (error) {
@@ -37,7 +37,7 @@ export const deptoSocket = (io) => {
       }
       // SI NO HAY ERROR
     });
-    socket.on(SocketServerEvent.eliminar, async (data, callback) => {
+    socket.on(SocketServerDepto.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarDepto(data);
       if (error) {
         callback({ error, msg: msg || "Hubo un error" });

@@ -5,3 +5,4 @@ export * from "./mensajes/chatSocket";
 export * from "./pages/pageSocket";
 export * from "./depto";
 export * from "./municipio";
+export * from "./sucursal";
