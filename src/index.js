@@ -8,6 +8,7 @@ import path from "path";
 config();
 
 import { dbConnection } from "./db/config";
+
 import {
   chatSocket,
   deptoSocket,
@@ -26,6 +27,7 @@ import {
 import { createServer } from "http";
 import socketio from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
+import "./models/streams";
 dbConnection();
 
 // Configura Cloudinary con tus credenciales
@@ -67,6 +69,34 @@ app.get("/api/report/pdf", (req, res) => {
     content: [
       {
         columns: [
+          {
+            // Segunda columna
+
+            margin: [10, 20, 10, 10], // Añade un margen superior de 20
+            stack: [
+              {
+                text: "Detalles del Cliente",
+                style: "clientDetailsTitle",
+              },
+              {
+                text: [
+                  { text: "Cliente: ", bold: true },
+                  "Nombre del cliente\n",
+                  { text: "Correo: ", bold: true },
+                  "correo@cliente.com\n",
+                  { text: "Número de factura: ", bold: true },
+                  "12345\n",
+                  { text: "Fecha: ", bold: true },
+                  "01/01/2022\n",
+                  { text: "Total: ", bold: true },
+                  "$50\n",
+                  { text: "Descuentos: ", bold: true },
+                  "$5\n",
+                ],
+                style: "clientDetails",
+              },
+            ],
+          },
           {
             // Segunda columna
 
@@ -343,30 +373,6 @@ app.get("/api/report/excel", async (req, res) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("My Sheet");
 
-  // Título del reporte
-  worksheet.mergeCells("A1:C1");
-  const titleRow = worksheet.getCell("A1");
-  titleRow.value = "Nombre de la Empresa";
-  titleRow.font = {
-    name: "Calibri",
-    size: 16,
-    underline: "single",
-    bold: true,
-    color: { argb: "0085A3" },
-  };
-  titleRow.alignment = { horizontal: "center" };
-
-  // Añadir una imagen (logo)
-
-  // Añadir una imagen (logo)
-
-  // Añadir una introducción
-  worksheet.mergeCells("A5:C7"); // Combinar un rango de 3x3 celdas para la introducción
-  const introRow = worksheet.getCell("A5");
-  introRow.value = "Introducción al reporte...";
-  introRow.font = { italic: true };
-  introRow.alignment = { horizontal: "center", vertical: "middle" }; // Centrar el texto tanto horizontal como verticalmente
-
   // Personalizar los estilos de las cabeceras
   worksheet.columns = [
     { header: "Id", key: "id", width: 10, style: { font: { bold: true } } },
@@ -400,58 +406,7 @@ app.get("/api/report/excel", async (req, res) => {
         fgColor: { argb: "FFFF00" },
       };
     });
-  // Añadir la cabecera de la tabla de departamentos y municipios
-  worksheet.addRow([
-    "Departamento",
-    "Producto",
-    "Precio Unitario",
-    "Total Ventas",
-  ]);
-  worksheet.getRow(worksheet.lastRow.number).eachCell((cell) => {
-    cell.font = { bold: true };
-    cell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "FFFF00" },
-    };
-  });
 
-  // Función para añadir una agrupación de productos por departamento
-  function addDepartment(departmentName, products) {
-    // Añadir el nombre del departamento
-    worksheet.addRow([departmentName]);
-    worksheet.mergeCells(
-      `A${worksheet.lastRow.number}:D${worksheet.lastRow.number}`
-    );
-    worksheet.getCell(`A${worksheet.lastRow.number}`).font = { bold: true };
-
-    // Añadir los productos de ese departamento
-    let departmentTotal = 0;
-    products.forEach((product) => {
-      const productTotal = product.quantity * product.price;
-      departmentTotal += productTotal;
-      worksheet.addRow(["", product.name, product.price, productTotal]);
-    });
-
-    // Añadir el total del departamento
-    worksheet.addRow(["", "Total Departamento", "", departmentTotal]);
-    worksheet.mergeCells(
-      `A${worksheet.lastRow.number}:C${worksheet.lastRow.number}`
-    );
-    worksheet.getCell(`A${worksheet.lastRow.number}`).font = { bold: true };
-    worksheet.getCell(`D${worksheet.lastRow.number}`).font = { bold: true };
-  }
-
-  // Ejemplo de uso de la función addDepartment
-  addDepartment("Departamento 1", [
-    { name: "Producto A", quantity: 3, price: 5 },
-    { name: "Producto B", quantity: 2, price: 12 },
-  ]);
-
-  addDepartment("Departamento 2", [
-    { name: "Producto C", quantity: 4, price: 7 },
-    { name: "Producto D", quantity: 1, price: 20 },
-  ]);
   // Establecer los encabezados de respuesta HTTP
   res.setHeader(
     "Content-Type",

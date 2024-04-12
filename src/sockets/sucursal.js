@@ -29,7 +29,6 @@ export const sucursalSocket = (io) => {
       // SI NO HAY ERROR
     });
     socket.on(SocketServerSucural.agregar, async (data, callback) => {
-      console.log({ data });
       const { error, item, msg } = await agregarSucursal(data);
 
       if (error) {

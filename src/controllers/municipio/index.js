@@ -1,8 +1,9 @@
 // Municipios
+import { response, request } from "express";
 import { MunicipioModel } from "../../models";
 import mongoose from "mongoose";
 
-export const getMunicipios = async (req, res = response) => {
+export const getMunicipios = async (req = request, res = response) => {
   try {
     const {
       pagination: { page, limit },
@@ -45,6 +46,18 @@ export const getMunicipios = async (req, res = response) => {
     res
       .status(500)
       .json({ ok: false, msg: "Hubo un error al obtener las páginas" });
+  }
+};
+
+export const searchMunicipiosByDepto = async (req = request, res = response) => {
+  const { deptoId } = req.body;
+  try {
+    const res = await MunicipioModel.find({ depto: deptoId }).limit(15);
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(400).json({
+      msg: "Hubo un error al consultar los municipios por departamento",
+    });
   }
 };
 

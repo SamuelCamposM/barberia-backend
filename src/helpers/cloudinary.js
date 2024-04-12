@@ -8,7 +8,6 @@ export const deleteFile = async (url) => {
   let publicId = url.split("/").pop().split(".")[0];
 
   try {
-    console.log(publicId);
     // Llama al método destroy de Cloudinary para eliminar el archivo\
     let result = await cloudinary.uploader.destroy(`barberia/${publicId}`);
     console.log(result);

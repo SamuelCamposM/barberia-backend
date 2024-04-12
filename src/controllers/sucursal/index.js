@@ -7,7 +7,6 @@ export const getSucursales = async (req, res = response) => {
       sort: { campo, asc },
       busqueda,
     } = req.body;
-    console.log(req.body);
     const aggregation = SucursalModel.aggregate([
       {
         $match: {
@@ -15,39 +14,10 @@ export const getSucursales = async (req, res = response) => {
             { name: new RegExp(busqueda, "i") },
             { tel: new RegExp(busqueda, "i") },
             { direccion: new RegExp(busqueda, "i") },
+            { "municipio.name": new RegExp(busqueda, "i") },
+            { "municipio.deptoName": new RegExp(busqueda, "i") },
           ],
         },
-      },
-      {
-        $lookup: {
-          from: "municipios", // nombre de la colección de municipios
-          localField: "municipio",
-          foreignField: "_id",
-          as: "municipio",
-          pipeline: [
-            {
-              $lookup: {
-                from: "deptos", // nombre de la colección de departamentos
-                localField: "depto",
-                foreignField: "_id",
-                as: "depto",
-              },
-            },
-            {
-              $unwind: "$depto", // descomponer el array de departamentos
-            },
-            {
-              $project: {
-                name: true,
-                _id: true,
-                depto: true, // incluir los datos del departamento
-              },
-            },
-          ],
-        },
-      },
-      {
-        $unwind: "$municipio", // descomponer el array de municipios
       },
       {
         $sort: {
