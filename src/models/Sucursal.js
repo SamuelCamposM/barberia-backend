@@ -11,6 +11,7 @@ const SucursalSchema = new Schema(
     tel: {
       type: String,
       required: true,
+      unique: true,
     },
     direccion: {
       type: String,
@@ -21,13 +22,20 @@ const SucursalSchema = new Schema(
       default: true, // Valor por defecto
     },
     municipio: {
-      id: {
+      _id: {
         type: Schema.Types.ObjectId,
         ref: "Municipio",
         required: true,
       },
       name: String, // Aquí se almacena el nombre del municipio
-      deptoName: String, // Aquí se almacena el nombre del departamento
+    },
+    depto: {
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Depto",
+        required: true,
+      },
+      name: String, // Aquí se almacena el nombre del municipio
     },
   },
   {

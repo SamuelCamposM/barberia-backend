@@ -128,21 +128,32 @@ export const getDeptos = async (req, res = response) => {
   }
 };
 export const searchDepto = async (req, res = response) => {
+  console.log(req.body);
   const { search } = req.body;
   try {
-    const res = await DeptoModel.find({ name: new RegExp(search, "i") });
-    res.status(200).json(res);
+    const response = await DeptoModel.find({ name: new RegExp(search, "i") })
+      .select("-__v") // Excluye la propiedad __v
+      .limit(15);
+    res.status(200).json(response);
   } catch (error) {
     console.log({ error });
-    res
-      .status(500)
-      .json({ ok: false, msg: "Hubo un error al consultar los modulos del menu" });
+    res.status(500).json({
+      error: true,
+      msg: "Hubo un error al consultar los modulos del menu",
+    });
   }
 };
 
 // SOCKET
 export const agregarDepto = async (item) => {
   try {
+    const existeDepto = await DeptoModel.findOne({ name: item.name });
+    if (existeDepto) {
+      return {
+        error: true,
+        msg: `Ya existe este departamento`,
+      };
+    }
     const newDepto = new DeptoModel(item);
     await newDepto.save();
     return { item: newDepto, error: false };
@@ -154,6 +165,15 @@ export const agregarDepto = async (item) => {
 
 export const editarDepto = async (item) => {
   try {
+    const existeDepto = await DeptoModel.findOne({
+      $and: [{ name: item.name }, { _id: { $ne: item._id } }],
+    });
+    if (existeDepto) {
+      return {
+        error: true,
+        msg: `Ya existe este departamento`,
+      };
+    }
     await DeptoModel.findOneAndUpdate({ _id: item._id }, item);
     return { error: false };
   } catch (error) {

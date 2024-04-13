@@ -42,11 +42,21 @@ export const getSucursales = async (req, res = response) => {
 // SOCKET
 export const agregarSucursal = async (item) => {
   try {
+    const existeSucursal = await SucursalModel.find({
+      $or: [{ name: item.name }, { tel: item.tel }],
+    });
+    if (existeSucursal) {
+      return {
+        error: true,
+        msg: `Ya existe una sucursal con este nombre o telefono`,
+      };
+    }
+
     const newSucursal = new SucursalModel(item);
+
     await newSucursal.save();
     return { item: newSucursal, error: false };
   } catch (error) {
-    console.log({ error });
     return { error: true, msg: error?.codeName };
   }
 };
