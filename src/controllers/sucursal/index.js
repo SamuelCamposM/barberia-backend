@@ -30,19 +30,20 @@ export const getSucursales = async (req, res = response) => {
       page,
       limit,
     });
+
     res.status(200).json({ result });
   } catch (error) {
     console.log({ error });
-    res
-      .status(500)
-      .json({ ok: false, msg: "Hubo un error al obtener las pages" });
+    return res.status(500).json({
+      error: "Hubo un error al obtener las sucursales",
+    });
   }
 };
 
 // SOCKET
 export const agregarSucursal = async (item) => {
   try {
-    const existeSucursal = await SucursalModel.find({
+    const existeSucursal = await SucursalModel.findOne({
       $or: [{ name: item.name }, { tel: item.tel }],
     });
     if (existeSucursal) {
@@ -57,7 +58,7 @@ export const agregarSucursal = async (item) => {
     await newSucursal.save();
     return { item: newSucursal, error: false };
   } catch (error) {
-    return { error: true, msg: error?.codeName };
+    return { error: true, msg: "Hubo un error al agregar la sucursal" };
   }
 };
 
@@ -67,7 +68,7 @@ export const editarSucursal = async (item) => {
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: error?.codeName };
+    return { error: true, msg: "Hubo un error al editar la sucursal" };
   }
 };
 
@@ -79,6 +80,6 @@ export const eliminarSucursal = async (item) => {
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: error?.codeName };
+    return { error: true, msg: "Hubo un error al eliminar la sucursal" };
   }
 };

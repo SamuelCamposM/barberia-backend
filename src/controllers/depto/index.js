@@ -118,12 +118,12 @@ export const getDeptos = async (req, res = response) => {
       page,
       limit,
     });
+
     res.status(200).json({ result });
   } catch (error) {
     console.log({ error });
-    res.status(500).json({
-      ok: false,
-      msg: "Hubo un error al obtener los modulos del menu",
+    return res.status(500).json({
+      error: "Hubo un error al obtener los departamenos",
     });
   }
 };
@@ -137,9 +137,8 @@ export const searchDepto = async (req, res = response) => {
     res.status(200).json(response);
   } catch (error) {
     console.log({ error });
-    res.status(500).json({
-      error: true,
-      msg: "Hubo un error al consultar los modulos del menu",
+    return res.status(500).json({
+      error: "Hubo un error al obtener los departamentos",
     });
   }
 };

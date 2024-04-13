@@ -43,9 +43,9 @@ export const getMunicipios = async (req = request, res = response) => {
     res.status(200).json({ result });
   } catch (error) {
     console.log({ error });
-    res
-      .status(500)
-      .json({ ok: false, msg: "Hubo un error al obtener las páginas" });
+    return res.status(500).json({
+      error: "Hubo un error al obtener los municipios xd",
+    });
   }
 };
 
@@ -61,10 +61,11 @@ export const searchMunicipiosByDepto = async (
     })
       .select(["-__v", "-depto"])
       .limit(15);
+
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(400).json({
-      msg: "Hubo un error al consultar los municipios por departamento",
+    return res.status(500).json({
+      error: "Hubo un error al obtener los municipios xd",
     });
   }
 };
