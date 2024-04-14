@@ -1,4 +1,4 @@
-import { DeptoModel, MunicipioModel } from "../../models";
+import { DeptoModel } from "../../models";
 
 export const getDeptos = async (req, res = response) => {
   try {
@@ -146,56 +146,40 @@ export const searchDepto = async (req, res = response) => {
 // SOCKET
 export const agregarDepto = async (item) => {
   try {
-    const existeDepto = await DeptoModel.findOne({ name: item.name });
-    if (existeDepto) {
-      return {
-        error: true,
-        msg: `Ya existe este departamento`,
-      };
-    }
     const newDepto = new DeptoModel(item);
     await newDepto.save();
     return { item: newDepto, error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: error?.codeName };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al crear el depto",
+    };
   }
 };
 
-export const editarDepto = async (item) => { 
+export const editarDepto = async (item) => {
   try {
-    const existeDepto = await DeptoModel.findOne({
-      $and: [{ name: item.name }, { _id: { $ne: item._id } }],
-    });
-    if (existeDepto) {
-      return {
-        error: true,
-        msg: `Ya existe este departamento`,
-      };
-    }
     await DeptoModel.findOneAndUpdate({ _id: item._id }, item, { new: true });
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: error?.codeName };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al actualizar el depto",
+    };
   }
 };
 
 export const eliminarDepto = async (item) => {
   try {
-    // Verifica si hay municipios asociados
-    const municipios = await MunicipioModel.find({ depto: item._id });
-    if (municipios.length > 0) {
-      return {
-        error: true,
-        msg: "No se puede eliminar el departamento con municipios asociados",
-      };
-    }
-
-    await DeptoModel.deleteOne(item);
+    await DeptoModel.findOneAndDelete(item);
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: error?.codeName };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al eliminar el depto",
+    };
   }
 };

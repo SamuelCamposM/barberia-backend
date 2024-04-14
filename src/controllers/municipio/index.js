@@ -75,49 +75,33 @@ export const searchMunicipiosByDepto = async (
 // SOCKET
 export const agregarMunicipio = async (item) => {
   try {
-    const existeMunicipio = await MunicipioModel.findOne({ name: item.name });
-    if (existeMunicipio) {
-      return {
-        error: true,
-        msg: `Ya existe este municipio`,
-      };
-    }
     const newMunicipio = new MunicipioModel(item);
     await newMunicipio.save();
     return { item: newMunicipio, error: false };
   } catch (error) {
-    console.log({ error });
-    return { error: true, msg: error?.codeName };
+    console.log(String(error));
+    return { error: true, msg: String(error) };
   }
 };
 
 export const editarMunicipio = async (item) => {
   try {
-    const existeMunicipio = await MunicipioModel.findOne({
-      $and: [{ name: item.name }, { _id: { $ne: item._id } }],
-    });
-    if (existeMunicipio) {
-      return {
-        error: true,
-        msg: `Ya existe este municipio`,
-      };
-    }
     await MunicipioModel.findOneAndUpdate({ _id: item._id }, item, {
       new: true,
     });
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: error?.codeName };
+    return { error: true, msg: String(error) };
   }
 };
 
 export const eliminarMunicipio = async (item) => {
   try {
-    await MunicipioModel.deleteOne(item);
+    await MunicipioModel.findOneAndDelete(item);
     return { error: false };
   } catch (error) {
-    console.log({ error });
-    return { error: true, msg: error?.codeName };
+    console.log(String(error));
+    return { error: true, msg: String(error) };
   }
 };
