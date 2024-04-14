@@ -54,6 +54,7 @@ export const searchMunicipiosByDepto = async (
   res = response
 ) => {
   const { deptoId, search } = req.body;
+  console.log(req.body);
   try {
     const data = await MunicipioModel.find({
       depto: deptoId,
@@ -64,6 +65,7 @@ export const searchMunicipiosByDepto = async (
 
     return res.status(200).json(data);
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: "Hubo un error al obtener los municipios xd",
     });
@@ -100,7 +102,9 @@ export const editarMunicipio = async (item) => {
         msg: `Ya existe este municipio`,
       };
     }
-    await MunicipioModel.findOneAndUpdate({ _id: item._id }, item);
+    await MunicipioModel.findOneAndUpdate({ _id: item._id }, item, {
+      new: true,
+    });
     return { error: false };
   } catch (error) {
     console.log({ error });

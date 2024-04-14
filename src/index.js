@@ -27,7 +27,7 @@ import {
 import { createServer } from "http";
 import socketio from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
-import "./models/streams";
+ 
 dbConnection();
 
 // Configura Cloudinary con tus credenciales

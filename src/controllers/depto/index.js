@@ -133,7 +133,7 @@ export const searchDepto = async (req, res = response) => {
   try {
     const response = await DeptoModel.find({ name: new RegExp(search, "i") })
       .select("-__v") // Excluye la propiedad __v
-      .limit(15);
+      .limit(30);
     res.status(200).json(response);
   } catch (error) {
     console.log({ error });
@@ -162,7 +162,7 @@ export const agregarDepto = async (item) => {
   }
 };
 
-export const editarDepto = async (item) => {
+export const editarDepto = async (item) => { 
   try {
     const existeDepto = await DeptoModel.findOne({
       $and: [{ name: item.name }, { _id: { $ne: item._id } }],
@@ -173,7 +173,7 @@ export const editarDepto = async (item) => {
         msg: `Ya existe este departamento`,
       };
     }
-    await DeptoModel.findOneAndUpdate({ _id: item._id }, item);
+    await DeptoModel.findOneAndUpdate({ _id: item._id }, item, { new: true });
     return { error: false };
   } catch (error) {
     console.log({ error });

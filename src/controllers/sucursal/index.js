@@ -15,7 +15,7 @@ export const getSucursales = async (req, res = response) => {
             { tel: new RegExp(busqueda, "i") },
             { direccion: new RegExp(busqueda, "i") },
             { "municipio.name": new RegExp(busqueda, "i") },
-            { "municipio.deptoName": new RegExp(busqueda, "i") },
+            { "depto.name": new RegExp(busqueda, "i") },
           ],
         },
       },
