@@ -1,4 +1,4 @@
-import { SucursalModel } from "../../models";
+import { SucursalModel } from "../../models/Sucursal";
 
 export const getSucursales = async (req, res = response) => {
   try {
@@ -43,22 +43,15 @@ export const getSucursales = async (req, res = response) => {
 // SOCKET
 export const agregarSucursal = async (item) => {
   try {
-    const existeSucursal = await SucursalModel.findOne({
-      $or: [{ name: item.name }, { tel: item.tel }],
-    });
-    if (existeSucursal) {
-      return {
-        error: true,
-        msg: `Ya existe una sucursal con este nombre o telefono`,
-      };
-    }
-
     const newSucursal = new SucursalModel(item);
 
     await newSucursal.save();
     return { item: newSucursal, error: false };
   } catch (error) {
-    return { error: true, msg: "Hubo un error al agregar la sucursal" };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al agregar la sucursal",
+    };
   }
 };
 
@@ -68,7 +61,10 @@ export const editarSucursal = async (item) => {
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: "Hubo un error al editar la sucursal" };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al editar la sucursal",
+    };
   }
 };
 
@@ -80,6 +76,9 @@ export const eliminarSucursal = async (item) => {
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: "Hubo un error al eliminar la sucursal" };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al eliminar la sucursal",
+    };
   }
 };

@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const SucursalSchema = new Schema(
+export const SucursalSchema = new Schema(
   {
     name: {
       type: String,
@@ -43,4 +43,3 @@ const SucursalSchema = new Schema(
   }
 );
 SucursalSchema.plugin(mongooseAggregatePaginate);
-export const SucursalModel = model("Sucursal", SucursalSchema);

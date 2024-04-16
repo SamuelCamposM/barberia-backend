@@ -23,11 +23,13 @@ import {
   mensajesRouter,
   deptoRouter,
   sucursalRouter,
+  userRouter,
 } from "./routes";
 import { createServer } from "http";
 import socketio from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
- 
+import { userSocket } from "./sockets/user";
+
 dbConnection();
 
 // Configura Cloudinary con tus credenciales
@@ -52,6 +54,7 @@ app.use("/api/pages", pagesRouter);
 app.use("/api/depto", deptoRouter);
 app.use("/api/municipio", municipioRouter);
 app.use("/api/sucursal", sucursalRouter);
+app.use("/api/user", userRouter);
 
 app.get("/api/report/pdf", (req, res) => {
   let fonts = {
@@ -432,6 +435,8 @@ pageSocket(io);
 deptoSocket(io);
 municipioSocket(io);
 sucursalSocket(io);
+userSocket(io);
+
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)
 );

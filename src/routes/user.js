@@ -1,6 +1,6 @@
 // HOST + "/api/"
 import express from "express";
-import { getSucursales } from "../controllers";
+import { getUsers } from "../controllers";
 
 export const userRouter = express.Router();
-userRouter.post("/", getSucursales);
+userRouter.post("/", getUsers);

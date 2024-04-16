@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
-import { roles } from "../helpers/userProps";
+import { Schema } from "mongoose";
+import { roles } from "../../helpers/userProps";
 
-const UsuarioSchema = new Schema(
+export const UsuarioSchema = new Schema(
   {
     name: {
       type: String,
@@ -47,5 +47,3 @@ UsuarioSchema.method("toJSON", function () {
   const { __v, ...rest } = this.toObject();
   return { ...rest, uid: rest._id };
 });
-
-export const UsuarioModel = model("Usuario", UsuarioSchema);
