@@ -6,8 +6,8 @@ import { check } from "express-validator";
 import {
   actualizarUsuario,
   comparePassword,
-  createUser,
-  loginUser,
+  createUsuario,
+  loginUsuario,
   renewToken,
 } from "../controllers";
 import { validarCampos } from "../middlewares";
@@ -24,7 +24,7 @@ authRouter.post(
     check("password", "El password debe de 6 caracteres").isLength({ min: 6 }),
     validarCampos,
   ],
-  createUser
+  createUsuario
 );
 
 authRouter.post(
@@ -34,7 +34,7 @@ authRouter.post(
     check("password", "El password debe de 6 caracteres").isLength({ min: 6 }),
     validarCampos,
   ],
-  loginUser
+  loginUsuario
 );
 
 authRouter.get("/renew", validarToken, renewToken);

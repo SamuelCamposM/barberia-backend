@@ -1,6 +1,6 @@
 import { UsuarioModel } from "../../models";
 
-export const getUsers = async (req, res = response) => {
+export const getUsuariosTable = async (req, res = response) => {
   try {
     const {
       pagination: { page, limit },
@@ -10,7 +10,7 @@ export const getUsers = async (req, res = response) => {
     const aggregation = UsuarioModel.aggregate([
       {
         $match: {
-          $or: [],
+          $or: [{ estado: true }],
         },
       },
       {
@@ -29,40 +29,40 @@ export const getUsers = async (req, res = response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
-      error: "Hubo un error al obtener los Users",
+      error: "Hubo un error al obtener los Usuarios",
     });
   }
 };
 
 // SOCKET
-export const agregarUser = async (item) => {
+export const agregarUsuario = async (item) => {
   try {
-    const newUser = new UsuarioModel(item);
+    const newUsuario = new UsuarioModel(item);
 
-    await newUser.save();
-    return { item: newUser, error: false };
+    await newUsuario.save();
+    return { item: newUsuario, error: false };
   } catch (error) {
-    return { error: true, msg: "Hubo un error al agregar el User" };
+    return { error: true, msg: "Hubo un error al agregar el Usuario" };
   }
 };
 
-export const editarUser = async (item) => {
+export const editarUsuario = async (item) => {
   try {
     await UsuarioModel.findOneAndUpdate({ _id: item._id }, item);
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: "Hubo un error al editar el User" };
+    return { error: true, msg: "Hubo un error al editar el Usuario" };
   }
 };
 
-export const eliminarUser = async (item) => {
+export const eliminarUsuario = async (item) => {
   try {
     // Verifica si hay municipios asociados
     await UsuarioModel.deleteOne(item);
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: "Hubo un error al eliminar el User" };
+    return { error: true, msg: "Hubo un error al eliminar el Usuario" };
   }
 };

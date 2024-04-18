@@ -29,12 +29,12 @@ const ProductoSchema = new Schema(
       enum: ["PRODUCTO", "SERVICIO"],
       default: "PRODUCTO",
     },
-    rUser: {
+    rUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
       required: true,
     },
-    eUser: {
+    eUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
     },

@@ -28,12 +28,12 @@ const CitaSchema = new Schema(
       enum: ["ACTIVO", "PENDIENTE", "FINALIZADA"], // Aquí defines los valores permitidos
       default: "ACTIVO", // Valor por defecto
     },
-    rUser: {
+    rUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
       required: true,
     },
-    eUser: {
+    eUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
     },

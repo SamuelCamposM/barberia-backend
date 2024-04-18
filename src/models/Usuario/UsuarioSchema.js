@@ -1,5 +1,6 @@
 import { Schema } from "mongoose";
-import { roles } from "../../helpers/userProps";
+import { roles } from "../../helpers/usuarioProps";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const UsuarioSchema = new Schema(
   {
@@ -47,3 +48,4 @@ UsuarioSchema.method("toJSON", function () {
   const { __v, ...rest } = this.toObject();
   return { ...rest, uid: rest._id };
 });
+UsuarioSchema.plugin(mongooseAggregatePaginate);

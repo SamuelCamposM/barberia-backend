@@ -15,7 +15,7 @@ const ValoracionSchema = new Schema(
       ref: "Usuario",
       required: true,
     },
-    rUser: {
+    rUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Cita",
       required: true,

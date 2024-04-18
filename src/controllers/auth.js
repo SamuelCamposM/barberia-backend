@@ -1,9 +1,9 @@
 import { response } from "express";
 import { UsuarioModel } from "../models";
 import bcryptjs from "bcryptjs";
-import { deleteFile, generarJwt, userProps } from "../helpers";
+import { deleteFile, generarJwt, usuarioProps } from "../helpers";
 
-export const createUser = async (req, res = response) => {
+export const createUsuario = async (req, res = response) => {
   const { email } = req.body;
   try {
     let usuario = await UsuarioModel.findOne({ email });
@@ -25,7 +25,7 @@ export const createUser = async (req, res = response) => {
     const token = await generarJwt(usuario.id);
     res.status(201).json({
       ok: true,
-      ...userProps(usuario),
+      ...usuarioProps(usuario),
       token,
     });
   } catch (error) {
@@ -37,7 +37,7 @@ export const createUser = async (req, res = response) => {
   }
 };
 
-export const loginUser = async (req, res = response) => {
+export const loginUsuario = async (req, res = response) => {
   const { email, password } = req.body;
   try {
     const usuario = await UsuarioModel.findOne({ email });
@@ -61,7 +61,7 @@ export const loginUser = async (req, res = response) => {
     const token = await generarJwt(usuario.id);
     res.json({
       ok: true,
-      ...userProps(usuario),
+      ...usuarioProps(usuario),
       token,
     });
   } catch (error) {
@@ -81,7 +81,7 @@ export const renewToken = async (req, res = response) => {
 
   res.json({
     ok: true,
-    ...userProps(usuario),
+    ...usuarioProps(usuario),
     token,
   });
 };

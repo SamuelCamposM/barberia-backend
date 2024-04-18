@@ -1,53 +1,53 @@
 import {
-  agregarUser,
-  editarUser,
-  eliminarUser,
+  agregarUsuario,
+  editarUsuario,
+  eliminarUsuario,
 } from "../controllers";
-export const SocketClientUser = {
-  agregar: "cliente:user-agregar",
-  editar: "cliente:user-editar",
-  eliminar: "cliente:user-eliminar",
+export const SocketClientUsuario = {
+  agregar: "cliente:usuario-agregar",
+  editar: "cliente:usuario-editar",
+  eliminar: "cliente:usuario-eliminar",
 };
 const SocketServerSucural = {
-  agregar: "server:user-agregar",
-  editar: "server:user-editar",
-  eliminar: "server:user-eliminar",
+  agregar: "server:usuario-agregar",
+  editar: "server:usuario-editar",
+  eliminar: "server:usuario-eliminar",
 };
 
-export const userSocket = (io) => {
+export const usuarioSocket = (io) => {
   io.on("connection", async (socket) => {
     socket.on(SocketServerSucural.editar, async (data, callback) => {
-      const { error, msg } = await editarUser(data);
+      const { error, msg } = await editarUsuario(data);
 
       if (error) {
         callback({ error, msg: msg || "Hubo un error!" });
         return;
       } else {
         callback({ error, msg: "Editado con exito!" });
-        io.emit(SocketClientUser.editar, data);
+        io.emit(SocketClientUsuario.editar, data);
       }
       // SI NO HAY ERROR
     });
     socket.on(SocketServerSucural.agregar, async (data, callback) => {
-      const { error, item, msg } = await agregarUser(data);
+      const { error, item, msg } = await agregarUsuario(data);
 
       if (error) {
         callback({ error, msg: msg || "Hubo un error" });
         return;
       } else {
         callback({ error, msg: "Guardado con exito!" });
-        io.emit(SocketClientUser.agregar, item);
+        io.emit(SocketClientUsuario.agregar, item);
       }
       // SI NO HAY ERROR
     });
     socket.on(SocketServerSucural.eliminar, async (data, callback) => {
-      const { error, msg } = await eliminarUser(data);
+      const { error, msg } = await eliminarUsuario(data);
       if (error) {
         callback({ error, msg: msg || "Hubo un error" });
         return;
       } else {
         callback({ error, msg: "Eliminado con exito!" });
-        io.emit(SocketClientUser.eliminar, data);
+        io.emit(SocketClientUsuario.eliminar, data);
       }
       // SI NO HAY ERROR
     });

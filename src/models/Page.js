@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { roles } from "../helpers/userProps";
+import { roles } from "../helpers/usuarioProps";
 const PageSchema = new Schema(
   {
     componente: {
