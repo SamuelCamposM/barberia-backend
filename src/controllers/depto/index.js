@@ -128,7 +128,6 @@ export const getDeptos = async (req, res = response) => {
   }
 };
 export const searchDepto = async (req, res = response) => {
-  console.log(req.body);
   const { search } = req.body;
   try {
     const response = await DeptoModel.find({ name: new RegExp(search, "i") })

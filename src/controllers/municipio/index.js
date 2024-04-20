@@ -54,7 +54,6 @@ export const searchMunicipiosByDepto = async (
   res = response
 ) => {
   const { deptoId, search } = req.body;
-  console.log(req.body);
   try {
     const data = await MunicipioModel.find({
       depto: deptoId,
@@ -79,7 +78,6 @@ export const agregarMunicipio = async (item) => {
     await newMunicipio.save();
     return { item: newMunicipio, error: false };
   } catch (error) {
-    console.log(String(error));
     return { error: true, msg: String(error) };
   }
 };
@@ -101,7 +99,6 @@ export const eliminarMunicipio = async (item) => {
     await MunicipioModel.findOneAndDelete(item);
     return { error: false };
   } catch (error) {
-    console.log(String(error));
     return { error: true, msg: String(error) };
   }
 };

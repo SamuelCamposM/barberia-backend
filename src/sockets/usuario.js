@@ -1,8 +1,4 @@
-import {
-  agregarUsuario,
-  editarUsuario,
-  eliminarUsuario,
-} from "../controllers";
+import { agregarUsuario, editarUsuario, eliminarUsuario } from "../controllers";
 export const SocketClientUsuario = {
   agregar: "cliente:usuario-agregar",
   editar: "cliente:usuario-editar",
@@ -24,7 +20,7 @@ export const usuarioSocket = (io) => {
         return;
       } else {
         callback({ error, msg: "Editado con exito!" });
-        io.emit(SocketClientUsuario.editar, data);
+        io.emit(SocketClientUsuario.editar, data.data);
       }
       // SI NO HAY ERROR
     });

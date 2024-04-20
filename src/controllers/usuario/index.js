@@ -1,5 +1,6 @@
+import { deleteFile } from "../../helpers";
 import { UsuarioModel } from "../../models";
-
+import bcryptjs from "bcryptjs";
 export const getUsuariosTable = async (req, res = response) => {
   try {
     const {
@@ -37,6 +38,9 @@ export const getUsuariosTable = async (req, res = response) => {
 // SOCKET
 export const agregarUsuario = async (item) => {
   try {
+    // ENCRIPTAR password
+    const salt = bcryptjs.genSaltSync();
+    item.password = bcryptjs.hashSync(item.newPassword, salt);
     const newUsuario = new UsuarioModel(item);
 
     await newUsuario.save();
@@ -46,9 +50,23 @@ export const agregarUsuario = async (item) => {
   }
 };
 
-export const editarUsuario = async (item) => {
+export const editarUsuario = async ({ data, eliminados }) => {
   try {
-    await UsuarioModel.findOneAndUpdate({ _id: item._id }, item);
+    eliminados.forEach(async (element) => {
+      await deleteFile(element);
+    });
+
+    console.log(data);
+    // ENCRIPTAR password
+    const salt = bcryptjs.genSaltSync();
+    const password =
+      data.newPassword === ""
+        ? data.password
+        : bcryptjs.hashSync(data.newPassword, salt);
+    await UsuarioModel.findOneAndUpdate(
+      { _id: data._id },
+      { ...data, password }
+    );
     return { error: false };
   } catch (error) {
     console.log({ error });
