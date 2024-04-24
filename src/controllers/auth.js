@@ -59,6 +59,8 @@ export const loginUsuario = async (req, res = response) => {
     }
     //TODO: GENERAR JWT
     const token = await generarJwt(usuario.id);
+    console.log(token);
+    console.log(usuario);
     res.json({
       ok: true,
       ...usuarioProps(usuario),
@@ -78,7 +80,7 @@ export const renewToken = async (req, res = response) => {
   //TODO: GENERAR JWT
   const token = await generarJwt(uid);
   let usuario = await UsuarioModel.findOne({ _id: uid });
-
+  console.log({ usuario });
   res.json({
     ok: true,
     ...usuarioProps(usuario),

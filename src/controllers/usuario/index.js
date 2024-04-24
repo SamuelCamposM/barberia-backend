@@ -7,11 +7,13 @@ export const getUsuariosTable = async (req, res = response) => {
       pagination: { page, limit },
       sort: { campo, asc },
       busqueda,
+      rol,
     } = req.body;
+    console.log(busqueda, rol);
     const aggregation = UsuarioModel.aggregate([
       {
         $match: {
-          $or: [{ estado: true }],
+          $and: [{ estado: true }, { rol }],
         },
       },
       {
@@ -46,6 +48,7 @@ export const agregarUsuario = async (item) => {
     await newUsuario.save();
     return { item: newUsuario, error: false };
   } catch (error) {
+    console.log(error);
     return { error: true, msg: "Hubo un error al agregar el Usuario" };
   }
 };
