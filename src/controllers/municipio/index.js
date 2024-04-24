@@ -44,7 +44,8 @@ export const getMunicipios = async (req = request, res = response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
-      error: "Hubo un error al obtener los municipios xd",
+      error: true,
+      msg: String(error) || "Hubo un error al obtener los municipios",
     });
   }
 };
@@ -66,7 +67,8 @@ export const searchMunicipiosByDepto = async (
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      error: "Hubo un error al obtener los municipios xd",
+      error: true,
+      msg: String(error) || "Hubo un error al obtener los municipios",
     });
   }
 };
@@ -78,7 +80,7 @@ export const agregarMunicipio = async (item) => {
     await newMunicipio.save();
     return { item: newMunicipio, error: false };
   } catch (error) {
-    return { error: true, msg: String(error) };
+    return { error: true, msg: String(error) || "error al agregar municipio" };
   }
 };
 
@@ -90,7 +92,7 @@ export const editarMunicipio = async (item) => {
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: String(error) };
+    return { error: true, msg: String(error) || "error al editar municipio" };
   }
 };
 
@@ -99,6 +101,6 @@ export const eliminarMunicipio = async (item) => {
     await MunicipioModel.findOneAndDelete(item);
     return { error: false };
   } catch (error) {
-    return { error: true, msg: String(error) };
+    return { error: true, msg: String(error) || "error al eliminar municipio" };
   }
 };

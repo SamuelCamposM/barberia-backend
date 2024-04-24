@@ -15,12 +15,12 @@ export const obtenerChat = async (req, res = response) => {
       .sort({ createdAt: "desc" })
       .limit(30);
     res.json({
-      ok: true,
       mensajes: last30.reverse(),
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ ok: false, msg: "Hubo un error al obtener los mensajes" });
+    res.status(500).json({
+      error: true,
+      msg: String(error) || "Hubo un error el chat",
+    });
   }
 };

@@ -22,9 +22,9 @@ export const generarJwt = (uid) => {
 export const comprobarJWT = (token) => {
   try {
     const { uid } = jwt.verify(token, process.env.SECRET_JWT_SEED);
-    return { ok: true, uid };
+    return { uid };
   } catch (error) {
     console.log({ error });
-    return { ok: false, uid: null };
+    return { error: true, uid: null };
   }
 };

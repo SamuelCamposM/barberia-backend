@@ -4,17 +4,8 @@ import bcryptjs from "bcryptjs";
 import { deleteFile, generarJwt, usuarioProps } from "../helpers";
 
 export const createUsuario = async (req, res = response) => {
-  const { email } = req.body;
   try {
-    let usuario = await UsuarioModel.findOne({ email });
-    if (usuario) {
-      return res.status(400).json({
-        ok: false,
-        msg: "Un usuario existe con ese correo",
-      });
-    }
-
-    usuario = new UsuarioModel(req.body);
+    const usuario = new UsuarioModel(req.body);
 
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
@@ -24,15 +15,14 @@ export const createUsuario = async (req, res = response) => {
     //TODO: GENERAR JWT
     const token = await generarJwt(usuario.id);
     res.status(201).json({
-      ok: true,
       ...usuarioProps(usuario),
       token,
     });
   } catch (error) {
     console.log({ error });
     res.status(500).json({
-      ok: false,
-      msg: "Por favor hable con el administrador",
+      error: true,
+      msg: String(error) || "Hubo un error al crear el usuario",
     });
   }
 };
@@ -43,7 +33,7 @@ export const loginUsuario = async (req, res = response) => {
     const usuario = await UsuarioModel.findOne({ email });
     if (!usuario) {
       return res.status(400).json({
-        ok: false,
+        error: true,
         msg: "El usuario no existe con ese correo",
       });
     }
@@ -53,7 +43,7 @@ export const loginUsuario = async (req, res = response) => {
 
     if (!validPassword) {
       return res.status(400).json({
-        ok: false,
+        error: true,
         msg: "Password incorrecto",
       });
     }
@@ -62,30 +52,37 @@ export const loginUsuario = async (req, res = response) => {
     console.log(token);
     console.log(usuario);
     res.json({
-      ok: true,
       ...usuarioProps(usuario),
       token,
     });
   } catch (error) {
     console.log({ error });
     res.status(500).json({
-      ok: false,
-      msg: "Por favor hable con el administrador",
+      error: true,
+      msg: String(error) || "Hubo un error al loguearse",
     });
   }
 };
 
 export const renewToken = async (req, res = response) => {
-  const { uid } = req;
-  //TODO: GENERAR JWT
-  const token = await generarJwt(uid);
-  let usuario = await UsuarioModel.findOne({ _id: uid });
-  console.log({ usuario });
-  res.json({
-    ok: true,
-    ...usuarioProps(usuario),
-    token,
-  });
+  try {
+    const { uid } = req;
+    //TODO: GENERAR JWT
+    console.log({ uid });
+    const token = await generarJwt(uid);
+    let usuario = await UsuarioModel.findOne({ _id: uid });
+    console.log({ usuario });
+    res.json({
+      ...usuarioProps(usuario),
+      token,
+    });
+  } catch (error) {
+    console.log({ error });
+    res.json({
+      error: true,
+      msg: String(error) || "Error al generar token",
+    });
+  }
 };
 
 export const actualizarUsuario = async (req, res) => {
@@ -101,7 +98,10 @@ export const actualizarUsuario = async (req, res) => {
       data.newPassword === ""
         ? data.password
         : bcryptjs.hashSync(data.newPassword, salt);
-    await UsuarioModel.updateOne({ _id: data.uid }, { ...data, password });
+    await UsuarioModel.findOneAndUpdate(
+      { _id: data.uid },
+      { ...data, password }
+    );
     return res.status(200).json({
       error: false,
       msg: "Actualizado con exito",
@@ -110,16 +110,7 @@ export const actualizarUsuario = async (req, res) => {
     console.log({ error });
     return res.status(400).json({
       error: true,
-      msg: "Hubo un error",
+      msg: String(error) || "Hubo un error al actualizar el usuario",
     });
   }
-};
-export const comparePassword = async (req, res) => {
-  const { uid, newPassword } = req.body;
-  const usuario = await UsuarioModel.findOne({ _id: uid });
-  const validPassword = bcryptjs.compareSync(newPassword, usuario.password);
-  if (validPassword) {
-    return res.status(200).json({ error: false });
-  }
-  return res.status(401).json({ error: true });
 };

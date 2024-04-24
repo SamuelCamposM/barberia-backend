@@ -123,7 +123,8 @@ export const getDeptos = async (req, res = response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
-      error: "Hubo un error al obtener los departamenos",
+      error: true,
+      msg: "Hubo un error al obtener los departamentos",
     });
   }
 };
@@ -137,7 +138,8 @@ export const searchDepto = async (req, res = response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
-      error: "Hubo un error al obtener los departamentos",
+      error: true,
+      msg: "Hubo un error al obtener los departamentos",
     });
   }
 };

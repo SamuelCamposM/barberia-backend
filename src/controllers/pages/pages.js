@@ -32,13 +32,15 @@ export const getPages = async (req, res = response) => {
 
     const pages = await PageModel.find();
     res.status(200).json({
-      ok: true,
       data: pages,
     });
   } catch (error) {
     console.log({ error });
     res
       .status(500)
-      .json({ ok: false, msg: "Hubo un error al obtener las pages" });
+      .json({
+        error: true,
+        msg: String(error) || "Hubo un error al obtener las pages",
+      });
   }
 };

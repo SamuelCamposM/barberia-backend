@@ -35,7 +35,8 @@ export const getSucursales = async (req, res = response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
-      error: "Hubo un error al obtener las sucursales",
+      error: true,
+      msg: String(error) || "Hubo un error al obtener las sucursales",
     });
   }
 };

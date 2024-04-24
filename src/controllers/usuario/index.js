@@ -32,7 +32,8 @@ export const getUsuariosTable = async (req, res = response) => {
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
-      error: "Hubo un error al obtener los Usuarios",
+      error: true,
+      msg: String(error) || "Hubo un error al obtener los Usuarios",
     });
   }
 };
@@ -49,7 +50,10 @@ export const agregarUsuario = async (item) => {
     return { item: newUsuario, error: false };
   } catch (error) {
     console.log(error);
-    return { error: true, msg: "Hubo un error al agregar el Usuario" };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al agregar el usuario",
+    };
   }
 };
 
@@ -73,17 +77,23 @@ export const editarUsuario = async ({ data, eliminados }) => {
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: "Hubo un error al editar el Usuario" };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al editar el usuario",
+    };
   }
 };
 
 export const eliminarUsuario = async (item) => {
   try {
     // Verifica si hay municipios asociados
-    await UsuarioModel.deleteOne(item);
+    await UsuarioModel.findOneAndUpdate({ _id: data._id }, { estado: false });
     return { error: false };
   } catch (error) {
     console.log({ error });
-    return { error: true, msg: "Hubo un error al eliminar el Usuario" };
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al eliminar la usuario",
+    };
   }
 };

@@ -10,9 +10,9 @@ export const chatSocket = (io) => {
   io.on("connection", async (socket) => {
     const { query } = socket.handshake;
 
-    const { ok, uid } = comprobarJWT(query["x-token"]);
+    const { error, uid } = comprobarJWT(query["x-token"]);
 
-    if (!ok) {
+    if (error) {
       console.log("Socket no identificado");
       return socket.disconnect();
     }
