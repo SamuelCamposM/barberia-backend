@@ -28,8 +28,7 @@ DeptoSchema.pre("save", async function (next) {
 });
 
 DeptoSchema.pre("findOneAndDelete", async function (next) {
-  console.log({ getFilter: this.getFilter() });
-  const depto = await this.model.findOne(this.getFilter()); 
+  const depto = await this.model.findOne(this.getFilter());
   const existingMunicipio = await MunicipioModel.findOne({
     depto: depto._id,
   });

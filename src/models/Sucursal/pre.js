@@ -2,7 +2,6 @@ import { SucursalModel } from ".";
 import { SucursalSchema } from "./SucursalSchema";
 SucursalSchema.pre("findOneAndUpdate", async function (next) {
   const sucursalUpdate = this.getUpdate();
-  console.log({ sucursalUpdate });
 
   if (sucursalUpdate.name || sucursalUpdate.tel || sucursalUpdate.municipio) {
     const existingSucursal = await SucursalModel.findOne({
@@ -12,8 +11,6 @@ SucursalSchema.pre("findOneAndUpdate", async function (next) {
         { "municipio._id": sucursalUpdate.municipio?._id },
       ],
     });
-    console.log({ existingSucursal });
-
     if (
       existingSucursal &&
       String(existingSucursal._id) !== String(this.getQuery()._id)

@@ -7,3 +7,4 @@ export * from "./depto";
 export * from "./municipio";
 export * from "./sucursal";
 export * from "./usuario";
+export * from "./marca";

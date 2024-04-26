@@ -37,6 +37,12 @@ export const loginUsuario = async (req, res = response) => {
         msg: "El usuario no existe con ese correo",
       });
     }
+    if (!usuario.estado) {
+      return res.status(401).json({
+        error: true,
+        msg: "El usuario no esta inactivo",
+      });
+    }
     // MATCH PASSWORD
 
     const validPassword = bcryptjs.compareSync(password, usuario.password);
@@ -49,8 +55,6 @@ export const loginUsuario = async (req, res = response) => {
     }
     //TODO: GENERAR JWT
     const token = await generarJwt(usuario.id);
-    console.log(token);
-    console.log(usuario);
     res.json({
       ...usuarioProps(usuario),
       token,
@@ -68,10 +72,14 @@ export const renewToken = async (req, res = response) => {
   try {
     const { uid } = req;
     //TODO: GENERAR JWT
-    console.log({ uid });
     const token = await generarJwt(uid);
     let usuario = await UsuarioModel.findOne({ _id: uid });
-    console.log({ usuario });
+    if (!usuario.estado) {
+      return res.status(401).json({
+        error: true,
+        msg: "El usuario no esta inactivo",
+      });
+    }
     res.json({
       ...usuarioProps(usuario),
       token,

@@ -3,13 +3,11 @@ import { UsuarioSchema } from "./UsuarioSchema";
 
 UsuarioSchema.pre("findOneAndUpdate", async function (next) {
   const usuarioUpdate = this.getUpdate();
-  console.log({ usuarioUpdate });
 
   if (usuarioUpdate.email) {
     const existingUsuario = await UsuarioModel.findOne({
       email: usuarioUpdate.email,
     });
-    console.log({ existingUsuario });
 
     if (
       existingUsuario &&

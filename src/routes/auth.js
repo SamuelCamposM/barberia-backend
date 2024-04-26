@@ -5,15 +5,12 @@ import { check } from "express-validator";
 
 import {
   actualizarUsuario,
-  comparePassword,
   createUsuario,
   loginUsuario,
   renewToken,
 } from "../controllers";
 import { validarCampos } from "../middlewares";
 import { validarToken } from "../middlewares/validarToken";
-import { UsuarioModel } from "../models";
-import { deleteFile } from "../helpers";
 export const authRouter = express.Router();
 
 authRouter.post(

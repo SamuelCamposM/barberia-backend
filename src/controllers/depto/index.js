@@ -134,7 +134,9 @@ export const searchDepto = async (req, res = response) => {
     const response = await DeptoModel.find({ name: new RegExp(search, "i") })
       .select("-__v") // Excluye la propiedad __v
       .limit(30);
-    res.status(200).json(response);
+    setTimeout(() => {
+      res.status(200).json(response);
+    }, 5000);
   } catch (error) {
     console.log({ error });
     return res.status(500).json({

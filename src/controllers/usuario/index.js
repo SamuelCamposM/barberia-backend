@@ -8,12 +8,17 @@ export const getUsuariosTable = async (req, res = response) => {
       sort: { campo, asc },
       busqueda,
       rol,
+      estado,
     } = req.body;
-    console.log(busqueda, rol);
     const aggregation = UsuarioModel.aggregate([
       {
         $match: {
-          $and: [{ estado: true }, { rol }],
+          $and: [{ estado }, { rol }],
+          $or: [
+            { name: new RegExp(busqueda, "i") },
+            { lastname: new RegExp(busqueda, "i") },
+            { email: new RegExp(busqueda, "i") },
+          ],
         },
       },
       {
@@ -63,7 +68,6 @@ export const editarUsuario = async ({ data, eliminados }) => {
       await deleteFile(element);
     });
 
-    console.log(data);
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
     const password =

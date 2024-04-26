@@ -31,7 +31,7 @@ export const getSucursales = async (req, res = response) => {
       limit,
     });
 
-    res.status(200).json({ result });
+    res.status(200).json(result);
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
