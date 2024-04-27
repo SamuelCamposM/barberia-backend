@@ -22,7 +22,6 @@ export const usuarioSocket = (io) => {
         callback({ error, msg: "Editado con exito!" });
         io.emit(SocketClientUsuario.editar, data.data);
       }
-      // SI NO HAY ERROR
     });
     socket.on(SocketServerSucural.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarUsuario(data);
@@ -34,7 +33,6 @@ export const usuarioSocket = (io) => {
         callback({ error, msg: "Guardado con exito!" });
         io.emit(SocketClientUsuario.agregar, item);
       }
-      // SI NO HAY ERROR
     });
     socket.on(SocketServerSucural.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarUsuario(data);
@@ -45,7 +43,6 @@ export const usuarioSocket = (io) => {
         callback({ error, msg: "Eliminado con exito!" });
         io.emit(SocketClientUsuario.eliminar, data);
       }
-      // SI NO HAY ERROR
     });
   });
 };

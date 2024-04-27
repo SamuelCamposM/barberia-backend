@@ -1,4 +1,5 @@
 import { CategoriaModel } from ".";
+import { ProductoModel } from "../Producto";
 import { CategoriaSchema } from "./CategoriaSchema";
 
 CategoriaSchema.pre("findOneAndUpdate", async function (next) {
@@ -27,6 +28,23 @@ CategoriaSchema.pre("save", async function (next) {
 
   if (existingCategoria) {
     throw new Error("Ya existe una categoría con ese nombre");
+  }
+  next();
+});
+
+CategoriaSchema.pre("findOneAndDelete", async function (next) {
+  const categoria = await this.model.findOne(this.getFilter());
+  console.log({ categoria });
+  // Busca si hay algún producto que esté utilizando esta categoria
+  const producto = await ProductoModel.findOne({
+    "categoria._id": categoria._id,
+  });
+  console.log({ producto });
+  // Si existe un producto con esta categoria, no permitas la eliminación
+  if (producto) {
+    throw new Error(
+      "No se puede eliminar esta categoria porque está siendo utilizada por un producto"
+    );
   }
   next();
 });

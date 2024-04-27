@@ -1,7 +1,11 @@
 import { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const ProductoSchema = new Schema(
   {
+    photo: {
+      type: String,
+    },
     name: {
       type: String,
       required: true,
@@ -16,31 +20,56 @@ export const ProductoSchema = new Schema(
       min: 0,
     },
     marca: {
-      type: Schema.Types.ObjectId,
-      ref: "Marca",
-      required: true,
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Marca",
+        required: true,
+      },
+      name: String, // Aquí se almacena el nombre de la marca
     },
     categoria: {
-      type: Schema.Types.ObjectId,
-      ref: "Categoria",
-      required: true,
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Categoria",
+        required: true,
+      },
+      name: String, // Aquí se almacena el nombre de la categoria
     },
     tipoProducto: {
-      type: Schema.Types.ObjectId,
+      type: String,
       enum: ["PRODUCTO", "SERVICIO"],
-      default: "PRODUCTO",
-    },
-    rUsuario: {
-      type: Schema.Types.ObjectId,
-      ref: "Usuario",
       required: true,
     },
+
+    rUsuario: {
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Usuario",
+        required: true,
+      },
+      name: String, // Aquí se almacena el nombre del usuario
+      dui: String, // Aquí se almacena el dui del usuario
+    },
     eUsuario: {
-      type: Schema.Types.ObjectId,
-      ref: "Usuario",
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Usuario",
+      },
+      name: String, // Aquí se almacena el nombre del usuario
+      dui: String, // Aquí se almacena el dui del usuario
+    },
+    estado: {
+      type: Boolean,
+      default: true,
     },
   },
   {
     timestamps: true,
   }
 );
+ProductoSchema.plugin(mongooseAggregatePaginate);
+
+ProductoSchema.index({ name: 1 });
+ProductoSchema.index({ price: 1 });
+ProductoSchema.index({ "marca.name": 1 });
+ProductoSchema.index({ "categoria.name": 1 });

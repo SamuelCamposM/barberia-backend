@@ -5,3 +5,5 @@ export * from "./municipio";
 export * from "./sucursal";
 export * from "./marca";
 export * from "./categoria";
+export * from "./producto";
+export * from "./usuario";

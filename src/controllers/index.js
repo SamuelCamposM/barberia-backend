@@ -9,3 +9,4 @@ export * from "./sucursal";
 export * from "./usuario";
 export * from "./marca";
 export * from "./categoria";
+export * from "./producto";
