@@ -8,3 +8,4 @@ export * from "./municipio";
 export * from "./sucursal";
 export * from "./usuario";
 export * from "./marca";
+export * from "./categoria";

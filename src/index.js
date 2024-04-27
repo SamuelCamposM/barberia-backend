@@ -13,6 +13,7 @@ import {
   municipioSocket,
   sucursalSocket,
   marcaSocket,
+  categoriaSocket,
 } from "./sockets";
 import {
   authRouter,
@@ -22,6 +23,7 @@ import {
   deptoRouter,
   sucursalRouter,
   usuarioRouter,
+  categoriaRouter,
 } from "./routes";
 import { createServer } from "http";
 import socketio from "socket.io";
@@ -55,6 +57,7 @@ app.use("/api/municipio", municipioRouter);
 app.use("/api/sucursal", sucursalRouter);
 app.use("/api/usuario", usuarioRouter);
 app.use("/api/marca", marcaRouter);
+app.use("/api/categoria", categoriaRouter);
 
 const server = createServer(app);
 const io = socketio(server, {
@@ -71,6 +74,7 @@ municipioSocket(io);
 sucursalSocket(io);
 usuarioSocket(io);
 marcaSocket(io);
+categoriaSocket(io);
 
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)
