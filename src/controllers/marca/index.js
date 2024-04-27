@@ -6,18 +6,21 @@ export const getMarcas = async (req, res = response) => {
       pagination: { page, limit },
       sort: { campo, asc },
       busqueda,
+      estado,
     } = req.body;
 
     const aggregation = MarcaModel.aggregate([
       {
         $match: {
-          $and: [{ name: new RegExp(busqueda, "i") }],
+          name: new RegExp(busqueda, "i"),
+          estado,
         },
       },
       {
         $project: {
           _id: true,
           name: true,
+          estado: true,
         },
       },
       {
@@ -44,12 +47,13 @@ export const getMarcas = async (req, res = response) => {
 export const searchMarca = async (req, res = response) => {
   const { search } = req.body;
   try {
-    const response = await MarcaModel.find({ name: new RegExp(search, "i") })
+    const response = await MarcaModel.find({
+      name: new RegExp(search, "i"),
+      estado: true,
+    })
       .select("-__v") // Excluye la propiedad __v
       .limit(30);
-    setTimeout(() => {
-      res.status(200).json(response);
-    }, 5000);
+    res.status(200).json(response);
   } catch (error) {
     console.log({ error });
     return res.status(500).json({

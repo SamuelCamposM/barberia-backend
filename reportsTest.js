@@ -367,3 +367,17 @@ app.get("/api/report/pdf", (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   });
+
+
+//   SERVER_PORT=4000
+// PORT_DB=3388
+// HOST_DB=207.244.238.207
+// USER_DB=neitor2022
+// PASSWORD_DB=MAga5ewuYu2I
+// NAME_DB=vet36501022022
+// CRYPTR=myTotalySecretKey
+// SECRET=0eec6cbe399874f9c009c4697a8a7fef01f36efd
+// MAIL_HOST=smtp.resend.com
+// MAIL_USER=resend
+// MAIL_PASS=re_JV4fZJzh_9iimiqX3Fei5LqQ6JriZHWp6
+// HOST_BACKEND_PHP=https://syscontable.neitor.com/

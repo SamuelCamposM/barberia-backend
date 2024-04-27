@@ -1,4 +1,5 @@
 import { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const MarcaSchema = new Schema({
   name: {
@@ -11,3 +12,4 @@ export const MarcaSchema = new Schema({
     default: true, // Valor por defecto
   },
 });
+MarcaSchema.plugin(mongooseAggregatePaginate);

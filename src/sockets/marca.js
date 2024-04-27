@@ -45,7 +45,6 @@ export const marcaSocket = (io) => {
         callback({ error, msg: "Eliminado con exito!" });
         io.emit(SocketClientMarca.eliminar, data);
       }
-      // SI NO HAY ERROR
     });
   });
 };
