@@ -3,8 +3,8 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const ProductoSchema = new Schema(
   {
-    photo: {
-      type: String,
+    photos: {
+      type: [String],
     },
     name: {
       type: String,
@@ -23,7 +23,6 @@ export const ProductoSchema = new Schema(
       _id: {
         type: Schema.Types.ObjectId,
         ref: "Marca",
-        required: true,
       },
       name: String, // Aquí se almacena el nombre de la marca
     },
@@ -31,7 +30,6 @@ export const ProductoSchema = new Schema(
       _id: {
         type: Schema.Types.ObjectId,
         ref: "Categoria",
-        required: true,
       },
       name: String, // Aquí se almacena el nombre de la categoria
     },
