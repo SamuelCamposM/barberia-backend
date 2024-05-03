@@ -32,6 +32,8 @@ import {
 import { createServer } from "http";
 import socketio from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
+import { proveedorRouter } from "./routes/proveedor";
+import { proveedorSocket } from "./sockets/proveedor";
 
 dbConnection();
 
@@ -61,6 +63,7 @@ app.use("/api/usuario", usuarioRouter);
 app.use("/api/marca", marcaRouter);
 app.use("/api/categoria", categoriaRouter);
 app.use("/api/producto", productoRouter);
+app.use("/api/proveedor", proveedorRouter);
 
 const server = createServer(app);
 const io = socketio(server, {
@@ -79,6 +82,7 @@ usuarioSocket(io);
 marcaSocket(io);
 categoriaSocket(io);
 productoSocket(io);
+proveedorSocket(io);
 
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)

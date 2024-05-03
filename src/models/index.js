@@ -9,3 +9,5 @@ export * from "./Producto";
 export * from "./Sucursal";
 export * from "./Usuario";
 export * from "./Valoracion";
+export * from "./Stock";
+export * from "./Proveedor";
