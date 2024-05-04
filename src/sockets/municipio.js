@@ -28,7 +28,7 @@ export const municipioSocket = (io) => {
 
         io.emit(`${SocketClientMunicipio.editar}.${data.depto}`, data);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerMunicipio.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarMunicipio(data);
@@ -44,7 +44,7 @@ export const municipioSocket = (io) => {
         });
         io.emit(`${SocketClientMunicipio.agregar}.${data.depto}`, item);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerMunicipio.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarMunicipio(data);
@@ -59,7 +59,7 @@ export const municipioSocket = (io) => {
         });
         io.emit(`${SocketClientMunicipio.eliminar}.${data.depto}`, data);
       }
-      // SI NO HAY ERROR
+      
     });
   });
 };

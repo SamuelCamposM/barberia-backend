@@ -66,8 +66,3 @@ export const ProductoSchema = new Schema(
   }
 );
 ProductoSchema.plugin(mongooseAggregatePaginate);
-
-ProductoSchema.index({ name: 1 });
-ProductoSchema.index({ price: 1 });
-ProductoSchema.index({ "marca.name": 1 });
-ProductoSchema.index({ "categoria.name": 1 });

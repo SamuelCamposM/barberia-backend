@@ -16,6 +16,7 @@ import {
   categoriaSocket,
   usuarioSocket,
   productoSocket,
+  compraSocket,
 } from "./sockets";
 import {
   authRouter,
@@ -34,6 +35,7 @@ import socketio from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
 import { proveedorRouter } from "./routes/proveedor";
 import { proveedorSocket } from "./sockets/proveedor";
+import { compraRouter } from "./routes/compra";
 
 dbConnection();
 
@@ -64,6 +66,7 @@ app.use("/api/marca", marcaRouter);
 app.use("/api/categoria", categoriaRouter);
 app.use("/api/producto", productoRouter);
 app.use("/api/proveedor", proveedorRouter);
+app.use("/api/compra", compraRouter);
 
 const server = createServer(app);
 const io = socketio(server, {
@@ -83,6 +86,7 @@ marcaSocket(io);
 categoriaSocket(io);
 productoSocket(io);
 proveedorSocket(io);
+compraSocket(io);
 
 server.listen(process.env.PORT, () =>
   console.log(`Servidor corriendo en puerto ${process.env.PORT}`)

@@ -37,7 +37,7 @@ export const productoSocket = (io) => {
         callback({ error, msg: "Guardado con exito!" });
         io.emit(SocketClientProducto.agregar, item);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerProducto.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarProducto(data);

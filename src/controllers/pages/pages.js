@@ -6,7 +6,7 @@ export const getPages = async (req, res = response) => {
     //  const pagesA = [
     //    "Menu",
     //    "Valoraciones",
-    //    "Productos",
+    //    "Producto",
     //    "Categoria",
     //    "Cita",
     //    "Depto",

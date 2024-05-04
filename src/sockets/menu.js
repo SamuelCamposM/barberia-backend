@@ -12,7 +12,7 @@ export const pageSocket = (io) => {
         callback({ error, msg: "Guardado con exito!" });
         io.emit("cliente:page-editar", item);
       }
-      // SI NO HAY ERROR
+      
     });
   });
 };

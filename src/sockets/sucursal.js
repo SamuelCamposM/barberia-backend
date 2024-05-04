@@ -26,7 +26,7 @@ export const sucursalSocket = (io) => {
         callback({ error, msg: "Editado con exito!" });
         io.emit(SocketClientSucursal.editar, data);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerSucural.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarSucursal(data);
@@ -38,7 +38,7 @@ export const sucursalSocket = (io) => {
         callback({ error, msg: "Guardado con exito!" });
         io.emit(SocketClientSucursal.agregar, item);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerSucural.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarSucursal(data);
@@ -49,7 +49,7 @@ export const sucursalSocket = (io) => {
         callback({ error, msg: "Eliminado con exito!" });
         io.emit(SocketClientSucursal.eliminar, data);
       }
-      // SI NO HAY ERROR
+      
     });
   });
 };

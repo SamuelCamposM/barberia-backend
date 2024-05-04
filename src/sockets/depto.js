@@ -23,7 +23,6 @@ export const deptoSocket = (io) => {
         callback({ error, msg: "Editado con exito!" });
         io.emit(SocketClientDepto.editar, data);
       }
-      // SI NO HAY ERROR
     });
     socket.on(SocketServerDepto.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarDepto(data);
@@ -35,7 +34,6 @@ export const deptoSocket = (io) => {
         callback({ error, msg: "Guardado con exito!" });
         io.emit(SocketClientDepto.agregar, item);
       }
-      // SI NO HAY ERROR
     });
     socket.on(SocketServerDepto.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarDepto(data);
@@ -46,7 +44,6 @@ export const deptoSocket = (io) => {
         callback({ error, msg: "Eliminado con exito!" });
         io.emit(SocketClientDepto.eliminar, data);
       }
-      // SI NO HAY ERROR
     });
   });
 };

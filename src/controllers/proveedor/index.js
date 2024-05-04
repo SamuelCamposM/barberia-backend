@@ -40,6 +40,23 @@ export const getProveedoresTable = async (req, res = response) => {
     });
   }
 };
+export const searchProveedor = async (req, res = response) => {
+  const { search } = req.body;
+  try {
+    const response = await ProveedorModel.find({
+      nombreCompleto: new RegExp(search, "i"),
+    })
+      .select("-__v") // Excluye la propiedad __v
+      .limit(30);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      error: true,
+      msg: "Hubo un error al obtener los proveedores",
+    });
+  }
+};
 
 export const agregarProveedor = async (item) => {
   try {

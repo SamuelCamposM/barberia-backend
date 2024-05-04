@@ -13,7 +13,6 @@ export const MunicipioSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Depto",
     required: true,
-    index: true,
   },
 });
 

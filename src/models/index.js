@@ -11,3 +11,4 @@ export * from "./Usuario";
 export * from "./Valoracion";
 export * from "./Stock";
 export * from "./Proveedor";
+export * from "./Compra";

@@ -26,7 +26,7 @@ export const categoriaSocket = (io) => {
         callback({ error, msg: "Editado con exito!" });
         io.emit(SocketClientCategoria.editar, data);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerCategoria.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarCategoria(data);
@@ -38,7 +38,7 @@ export const categoriaSocket = (io) => {
         callback({ error, msg: "Guardado con exito!" });
         io.emit(SocketClientCategoria.agregar, item);
       }
-      // SI NO HAY ERROR
+      
     });
     socket.on(SocketServerCategoria.eliminar, async (data, callback) => {
       const { error, msg } = await eliminarCategoria(data);

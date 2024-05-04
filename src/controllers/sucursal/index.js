@@ -42,20 +42,23 @@ export const getSucursales = async (req, res = response) => {
 };
 
 // SOCKET
-export const agregarSucursal = async (item) => {
+export const searchSucursal = async (req, res = response) => {
+  const { search } = req.body;
   try {
-    const newSucursal = new SucursalModel(item);
-
-    await newSucursal.save();
-    return { item: newSucursal, error: false };
+    const response = await SucursalModel.find({
+      name: new RegExp(search, "i"),
+    })
+      .select("-__v") // Excluye la propiedad __v
+      .limit(30);
+    res.status(200).json(response);
   } catch (error) {
-    return {
+    console.log({ error });
+    return res.status(500).json({
       error: true,
-      msg: String(error) || "Hubo un error al agregar la sucursal",
-    };
+      msg: "Hubo un error al obtener las sucursales",
+    });
   }
 };
-
 export const editarSucursal = async (item) => {
   try {
     await SucursalModel.findOneAndUpdate({ _id: item._id }, item);
