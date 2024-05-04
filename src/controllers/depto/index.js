@@ -132,7 +132,7 @@ export const searchDepto = async (req, res = response) => {
   const { search } = req.body;
   try {
     const response = await DeptoModel.find({ name: new RegExp(search, "i") })
-      .select("-__v") // Excluye la propiedad __v
+      .select(["name"]) // Excluye la propiedad __v
       .limit(30);
     res.status(200).json(response);
   } catch (error) {

@@ -6,12 +6,15 @@ export const CompraSchema = new Schema(
     proveedor: {
       type: Schema.Types.ObjectId,
       ref: "Proveedor",
-      required: true, 
+      required: true,
     },
     sucursal: {
       type: Schema.Types.ObjectId,
       ref: "Sucursal",
-      required: true, 
+      required: true,
+    },
+    totalProductos: {
+      type: Number,
     },
     gastoTotal: {
       type: Number,
@@ -19,11 +22,11 @@ export const CompraSchema = new Schema(
     rUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
-      required: true, 
+      required: true,
     },
     eUsuario: {
       type: Schema.Types.ObjectId,
-      ref: "Usuario", 
+      ref: "Usuario",
     },
     estado: {
       type: String,

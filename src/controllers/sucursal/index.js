@@ -47,8 +47,9 @@ export const searchSucursal = async (req, res = response) => {
   try {
     const response = await SucursalModel.find({
       name: new RegExp(search, "i"),
+      estado: true,
     })
-      .select("-__v") // Excluye la propiedad __v
+      .select(["name", "tel"])
       .limit(30);
     res.status(200).json(response);
   } catch (error) {
@@ -57,6 +58,19 @@ export const searchSucursal = async (req, res = response) => {
       error: true,
       msg: "Hubo un error al obtener las sucursales",
     });
+  }
+};
+export const agregarSucursal = async (item) => {
+  try {
+    const newSucursal = new SucursalModel(item);
+    await newSucursal.save();
+    return { item: newSucursal, error: false };
+  } catch (error) {
+    console.log({ error });
+    return {
+      error: true,
+      msg: String(error) || "Hubo un error al editar la sucursal",
+    };
   }
 };
 export const editarSucursal = async (item) => {

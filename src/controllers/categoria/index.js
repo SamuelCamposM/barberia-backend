@@ -51,7 +51,7 @@ export const searchCategoria = async (req, res = response) => {
       name: new RegExp(search, "i"),
       estado: true,
     })
-      .select(["-__v", "-estado"]) // Excluye la propiedad __v
+      .select(["name"])
       .limit(30);
     res.status(200).json(response);
   } catch (error) {

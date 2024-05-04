@@ -46,7 +46,7 @@ export const searchProveedor = async (req, res = response) => {
     const response = await ProveedorModel.find({
       nombreCompleto: new RegExp(search, "i"),
     })
-      .select("-__v") // Excluye la propiedad __v
+      .select(["nombreCompleto"]) // Excluye la propiedad __v
       .limit(30);
     res.status(200).json(response);
   } catch (error) {
