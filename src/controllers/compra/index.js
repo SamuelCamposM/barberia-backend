@@ -67,6 +67,7 @@ export const getCompras = async (req, res) => {
         $project: {
           estado: 1,
           gastoTotal: 1,
+          totalProductos: 1,
           "proveedor._id": 1,
           "proveedor.email": 1,
           "proveedor.nombreCompleto": 1,
@@ -80,6 +81,7 @@ export const getCompras = async (req, res) => {
           "sucursal._id": 1,
           "sucursal.name": 1,
           "sucursal.tel": 1,
+          createdAt: true,
         },
       },
       {
@@ -102,8 +104,6 @@ export const getCompras = async (req, res) => {
       page,
       limit,
     });
-
-    console.log(result.docs);
     res.status(200).json({ result });
   } catch (error) {
     console.log({ error });
@@ -152,7 +152,7 @@ export const agregarCompra = async (item) => {
     };
     const newCompra = new CompraModel(compra);
     await newCompra.save();
-    return { item: { ...compra, _id: newCompra._id }, error: false };
+    return { item: { ...item, _id: newCompra._id }, error: false };
   } catch (error) {
     console.log({ error });
     return {

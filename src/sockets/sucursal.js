@@ -34,7 +34,6 @@ export const sucursalSocket = (io) => {
         callback({ error, msg: msg || "Hubo un error" });
         return;
       } else {
-        console.log({ item });
         callback({ error, msg: "Guardado con exito!" });
         io.emit(SocketClientSucursal.agregar, item);
       }

@@ -10,7 +10,6 @@ export const deleteFile = async (url) => {
   try {
     // Llama al método destroy de Cloudinary para eliminar el archivo\
     let result = await cloudinary.uploader.destroy(`barberia/${publicId}`);
-    console.log(result);
     // Comprueba si el archivo se eliminó correctamente
     if (result.result === "ok") {
       return `Archivo ${publicId} eliminado correctamente.`;

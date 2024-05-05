@@ -2,12 +2,12 @@ import { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const StockSchema = new Schema({
-  idSucursal: {
+  sucursal: {
     type: Schema.Types.ObjectId,
     ref: "Sucursal",
     required: true,
   },
-  idProducto: {
+  producto: {
     type: Schema.Types.ObjectId,
     ref: "Producto",
     required: true,
@@ -16,10 +16,6 @@ export const StockSchema = new Schema({
     type: Number,
     required: true,
     min: 0,
-  },
-  unidad: {
-    type: String,
-    required: true,
   },
 });
 StockSchema.plugin(mongooseAggregatePaginate);

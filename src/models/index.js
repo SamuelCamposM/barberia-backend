@@ -12,3 +12,4 @@ export * from "./Valoracion";
 export * from "./Stock";
 export * from "./Proveedor";
 export * from "./Compra";
+export * from "./DetCompra";

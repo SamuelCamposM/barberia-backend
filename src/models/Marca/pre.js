@@ -34,10 +34,8 @@ MarcaSchema.pre("save", async function (next) {
 
 MarcaSchema.pre("findOneAndDelete", async function (next) {
   const marca = await this.model.findOne(this.getFilter());
-  console.log({ marca });
   // Busca si hay algún producto que esté utilizando esta marca
   const producto = await ProductoModel.findOne({ "marca._id": marca._id });
-  console.log({ producto });
   // Si existe un producto con esta marca, no permitas la eliminación
   if (producto) {
     throw new Error(

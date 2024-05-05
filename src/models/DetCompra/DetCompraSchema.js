@@ -18,5 +18,8 @@ export const DetCompraSchema = new Schema({
   precioUnidad: {
     type: Number,
   },
+  total: {
+    type: Number,
+  },
 });
 DetCompraSchema.plugin(mongooseAggregatePaginate);

@@ -55,7 +55,6 @@ export const searchMunicipiosByDepto = async (
   res = response
 ) => {
   const { deptoId, search } = req.body;
-  console.log(deptoId);
   try {
     const data = await MunicipioModel.find({
       depto: deptoId,

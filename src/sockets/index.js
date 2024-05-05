@@ -8,3 +8,4 @@ export * from "./categoria";
 export * from "./producto";
 export * from "./usuario";
 export * from "./compra";
+export * from "./detCompra";

@@ -45,7 +45,6 @@ export const getUsuariosTable = async (req, res = response) => {
 
 // SOCKET
 export const agregarUsuario = async (item) => {
-  console.log({ item });
   try {
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();

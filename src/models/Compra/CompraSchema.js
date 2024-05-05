@@ -14,11 +14,10 @@ export const CompraSchema = new Schema(
       required: true,
     },
     totalProductos: {
+      default: 0,
       type: Number,
     },
-    gastoTotal: {
-      type: Number,
-    },
+    gastoTotal: { default: 0, type: Number },
     rUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",

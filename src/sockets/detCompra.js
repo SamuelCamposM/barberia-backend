@@ -1,48 +1,58 @@
-import { agregarCompra, editarCompra, eliminarCompra } from "../controllers";
-export const SocketClientCompra = {
-  agregar: "cliente:compra-agregar",
-  editar: "cliente:compra-editar",
-  eliminar: "cliente:compra-eliminar",
-  detCompraListener: "cliente:compra-detCompra-listener",
-};
-const SocketServerCompra = {
-  agregar: "server:compra-agregar",
-  editar: "server:compra-editar",
-  eliminar: "server:compra-eliminar",
+import {
+  agregarDetCompra,
+  editarDetCompra,
+  eliminarDetCompra,
+} from "../controllers";
+const SocketClientCompra = {
+  agregar: "cliente:detCompra-agregar",
+  editar: "cliente:detCompra-editar",
+  eliminar: "cliente:detCompra-eliminar",
 };
 
-export const compraSocket = (io) => {
+const SocketServerCompra = {
+  agregar: "server:detCompra-agregar",
+  editar: "server:detCompra-editar",
+  eliminar: "server:detCompra-eliminar",
+};
+
+export const detCompraSocket = (io) => {
   io.on("connection", async (socket) => {
     socket.on(SocketServerCompra.editar, async (data, callback) => {
-      const { error, msg } = await editarCompra(data);
+      const { error, msg } = await editarDetCompra(data);
 
       if (error) {
         callback({ error, msg: msg || "Hubo un error!" });
         return;
       } else {
         callback({ error, msg: "Editado con éxito!" });
-        io.emit(SocketClientCompra.editar, data);
+
+        io.emit(`${SocketClientCompra.editar}.${data.compra}`, data);
       }
     });
+
     socket.on(SocketServerCompra.agregar, async (data, callback) => {
-      const { error, item, msg } = await agregarCompra(data);
+      const { error, item, msg } = await agregarDetCompra(data);
 
       if (error) {
         callback({ error, msg: msg || "Hubo un error" });
         return;
       } else {
         callback({ error, msg: "Guardado con éxito!" });
-        io.emit(SocketClientCompra.agregar, item);
+
+        io.emit(`${SocketClientCompra.agregar}.${data.compra}`, item);
       }
     });
+
     socket.on(SocketServerCompra.eliminar, async (data, callback) => {
-      const { error, msg } = await eliminarCompra(data);
+      const { error, msg } = await eliminarDetCompra(data);
+
       if (error) {
         callback({ error, msg: msg || "Hubo un error" });
         return;
       } else {
         callback({ error, msg: "Eliminado con éxito!" });
-        io.emit(SocketClientCompra.eliminar, data);
+
+        io.emit(`${SocketClientCompra.eliminar}.${data.compra}`, data);
       }
     });
   });
