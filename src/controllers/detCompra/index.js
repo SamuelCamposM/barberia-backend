@@ -1,7 +1,8 @@
 // DetCompra
 import { response, request } from "express";
-import { DetCompraModel } from "../../models";
+import { CompraModel, DetCompraModel } from "../../models";
 import mongoose from "mongoose";
+import { CompraSchema } from "../../models/Compra/CompraSchema";
 
 export const getDetCompras = async (req = request, res = response) => {
   try {
@@ -10,7 +11,7 @@ export const getDetCompras = async (req = request, res = response) => {
       sort: { campo, asc },
       busqueda,
       compra,
-    } = req.body; 
+    } = req.body;
     const aggregation = DetCompraModel.aggregate([
       {
         $match: {
@@ -39,7 +40,6 @@ export const getDetCompras = async (req = request, res = response) => {
           total: true,
           cantidad: true,
           precioUnidad: true,
-        
         },
       },
       {
@@ -73,16 +73,26 @@ export const getDetCompras = async (req = request, res = response) => {
 // SOCKET
 
 // item = objeto detCompra
-export const agregarDetCompra = async (item) => {
+export const agregarDetCompra = async ({ data, dataCompra }) => {
   try {
-    // Adaptar el objeto item al esquema de Compra
+    const dataCompraRes = {
+      totalProductos: dataCompra.totalProductos + data.cantidad,
+      gastoTotal: dataCompra.gastoTotal + data.total,
+    };
+
+    await CompraModel.updateOne({ _id: data.compra }, dataCompraRes);
+    // Adaptar el objeto data al esquema de Compra
     const detCompra = {
-      ...item,
-      producto: item.producto._id,
+      ...data,
+      producto: data.producto._id,
     };
     const newCompra = new DetCompraModel(detCompra);
     await newCompra.save();
-    return { item: { ...item, _id: newCompra._id }, error: false };
+    return {
+      item: { ...data, _id: newCompra._id },
+      error: false,
+      dataCompraRes,
+    };
   } catch (error) {
     return {
       error: true,
@@ -92,12 +102,23 @@ export const agregarDetCompra = async (item) => {
 };
 
 // item = objeto detCompra
-export const editarDetCompra = async (item) => {
+export const editarDetCompra = async ({
+  data,
+  dataCompra,
+  dataDetCompraOld,
+}) => {
   try {
-    await DetCompraModel.findOneAndUpdate({ _id: item._id }, item, {
+    const dataCompraRes = {
+      totalProductos:
+        dataCompra.totalProductos + data.cantidad - dataDetCompraOld.cantidad,
+      gastoTotal: dataCompra.gastoTotal + data.total - dataDetCompraOld.total,
+    };
+
+    await CompraModel.updateOne({ _id: data.compra }, dataCompraRes);
+    await DetCompraModel.findOneAndUpdate({ _id: data._id }, data, {
       new: true,
     });
-    return { error: false };
+    return { error: false, dataCompraRes };
   } catch (error) {
     console.log({ error });
     return {
@@ -108,10 +129,22 @@ export const editarDetCompra = async (item) => {
 };
 
 // item = {_id:_id}
-export const eliminarDetCompra = async (item) => {
+export const eliminarDetCompra = async ({
+  _id,
+  compra,
+  dataCompra,
+  dataDetCompraOld,
+}) => {
   try {
-    await DetCompraModel.findOneAndDelete(item);
-    return { error: false };
+    const dataCompraRes = {
+      totalProductos: dataCompra.totalProductos - dataDetCompraOld.cantidad,
+      gastoTotal: dataCompra.gastoTotal - dataDetCompraOld.total,
+    };
+
+    await CompraModel.updateOne({ _id: compra }, dataCompraRes);
+    const res = await DetCompraModel.findOneAndDelete(_id);
+    console.log({ res });
+    return { error: false, dataCompraRes };
   } catch (error) {
     return {
       error: true,
