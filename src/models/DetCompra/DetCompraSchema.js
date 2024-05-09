@@ -15,6 +15,9 @@ export const DetCompraSchema = new Schema({
   cantidad: {
     type: Number,
   },
+  cantidadOld: {
+    type: Number,
+  },
   precioUnidad: {
     type: Number,
   },

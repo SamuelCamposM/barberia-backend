@@ -8,5 +8,4 @@ export * from "./pages";
 export * from "./producto";
 export * from "./sucursal";
 export * from "./usuario";
-export * from "./compra";
-export * from "./detCompra";
+export * from "./compra"; 

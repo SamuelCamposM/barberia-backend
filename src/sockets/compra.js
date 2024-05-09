@@ -13,17 +13,6 @@ const SocketServerCompra = {
 
 export const compraSocket = (io) => {
   io.on("connection", async (socket) => {
-    socket.on(SocketServerCompra.editar, async (data, callback) => {
-      const { error, msg } = await editarCompra(data);
-
-      if (error) {
-        callback({ error, msg: msg || "Hubo un error!" });
-        return;
-      } else {
-        callback({ error, msg: "Editado con éxito!" });
-        io.emit(SocketClientCompra.editar, data);
-      }
-    });
     socket.on(SocketServerCompra.agregar, async (data, callback) => {
       const { error, item, msg } = await agregarCompra(data);
 
@@ -33,6 +22,17 @@ export const compraSocket = (io) => {
       } else {
         callback({ error, msg: "Guardado con éxito!" });
         io.emit(SocketClientCompra.agregar, item);
+      }
+    });
+    socket.on(SocketServerCompra.editar, async (data, callback) => {
+      const { error, msg } = await editarCompra(data);
+
+      if (error) {
+        callback({ error, msg: msg || "Hubo un error!" });
+        return;
+      } else {
+        callback({ error, msg: "Editado con éxito!" });
+        io.emit(SocketClientCompra.editar, data);
       }
     });
     socket.on(SocketServerCompra.eliminar, async (data, callback) => {
