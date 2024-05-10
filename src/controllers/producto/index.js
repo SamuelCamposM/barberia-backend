@@ -24,6 +24,72 @@ export const getProductos = async (req, res = response) => {
         },
       },
 
+      // {
+      //   $lookup: {
+      //     from: "stocks",
+      //     localField: "_id",
+      //     foreignField: "producto",
+      //     as: "stocks",
+      //   },
+      // },
+      // {
+      //   $addFields: {
+      //     stockTotal2: { $sum: "$stocks.cantidad" },
+      //   },
+      // },
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "rUsuario",
+          foreignField: "_id",
+          as: "rUsuario",
+        },
+      },
+      {
+        $unwind: "$rUsuario",
+      },
+      {
+        $lookup: {
+          from: "usuarios",
+          localField: "eUsuario",
+          foreignField: "_id",
+          as: "eUsuario",
+        },
+      },
+      {
+        $unwind: {
+          path: "$eUsuario",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          photos: 1,
+          name: 1,
+          description: 1,
+          price: 1,
+          marca: {
+            name: 1,
+            _id: 1,
+          },
+          estado: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          tipoProducto: 1,
+          categoria: {
+            name: 1,
+            _id: 1,
+          },
+          stockTotal: 1,
+          "rUsuario._id": 1,
+          "rUsuario.dui": 1,
+          "rUsuario.name": 1,
+          "eUsuario._id": 1,
+          "eUsuario.dui": 1,
+          "eUsuario.name": 1,
+          createdAt: true,
+        },
+      },
       {
         $sort: {
           [campo]: asc ? 1 : -1,
@@ -65,12 +131,26 @@ export const searchProducto = async (req, res = response) => {
 };
 
 // SOCKET
-export const agregarProducto = async (item) => {
+export const agregarProducto = async (data) => {
   try {
-    console.log({ item });
-    const newProducto = new ProductoModel(item);
+    const { detComprasData, ...restProducto } = data;
+
+    // Adaptar el objeto item al esquema de Compra
+    const producto = {
+      ...restProducto,
+      rUsuario: restProducto.rUsuario._id,
+      eUsuario: null,
+    };
+    const newProducto = new ProductoModel(producto);
     await newProducto.save();
-    return { item: newProducto, error: false };
+    return {
+      item: {
+        ...restProducto,
+        _id: newProducto._id,
+        createdAt: newProducto.createdAt,
+      },
+      error: false,
+    };
   } catch (error) {
     console.log({ error });
     return {
@@ -82,10 +162,21 @@ export const agregarProducto = async (item) => {
 
 export const editarProducto = async ({ data, eliminados }) => {
   try {
+    console.log({ data });
     eliminados.forEach(async (element) => {
       await deleteFile(element);
     });
-    await ProductoModel.findOneAndUpdate({ _id: data._id }, data, {
+
+    const { detComprasData, ...restProducto } = data;
+
+    // Adaptar el objeto item al esquema de Compra
+    const producto = {
+      ...restProducto,
+      rUsuario: data.rUsuario._id,
+      eUsuario: data.eUsuario._id,
+    };
+    console.log(producto);
+    await ProductoModel.findOneAndUpdate({ _id: data._id }, producto, {
       new: true,
     });
     return { error: false };

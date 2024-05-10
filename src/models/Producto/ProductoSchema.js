@@ -38,24 +38,16 @@ export const ProductoSchema = new Schema(
       enum: ["PRODUCTO", "SERVICIO"],
       required: true,
     },
-
     rUsuario: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        ref: "Usuario",
-        required: true,
-      },
-      name: String, // Aquí se almacena el nombre del usuario
-      dui: String, // Aquí se almacena el dui del usuario
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
     },
     eUsuario: {
-      _id: {
-        type: Schema.Types.ObjectId,
-        ref: "Usuario",
-      },
-      name: String, // Aquí se almacena el nombre del usuario
-      dui: String, // Aquí se almacena el dui del usuario
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
     },
+    stockTotal: { default: 0, type: Number },
     estado: {
       type: Boolean,
       default: true,

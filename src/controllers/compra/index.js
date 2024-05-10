@@ -236,9 +236,8 @@ export const editarCompra = async (data) => {
       gastoTotal: data.gastoTotal,
       rUsuario: data.rUsuario._id,
       estado: data.estado,
-      eUsuario: data?.eUsuario?._id,
+      eUsuario: data.eUsuario._id,
     };
-    console.log(compra, data);
     // Actualizar la compra
     const updatedCompra = await CompraModel.findOneAndUpdate(
       { _id: data._id },
@@ -279,16 +278,27 @@ export const editarCompra = async (data) => {
     if (data.estado === "FINALIZADA") {
       for (const detCompraItem of detComprasData) {
         if (!detCompraItem.crud?.eliminado) {
-          // Crear un registro de Stock
-          const stock = {
+          // Buscar si ya existe un registro de Stock para la sucursal y producto
+          const existingStock = await StockModel.findOne({
             sucursal: updatedCompra.sucursal,
             producto: detCompraItem.producto._id,
-            cantidad: detCompraItem.cantidad,
-            // ... otros campos necesarios para el Stock
-          };
-          const newStock = new StockModel(stock);
-          await newStock.save();
-          // Aquí deberías agregar la lógica para crear el Stock en la base de datos
+          });
+
+          if (existingStock) {
+            // Si existe, actualizar la cantidad de stock existente
+            existingStock.cantidad += detCompraItem.cantidad;
+            await existingStock.save();
+          } else {
+            // Si no existe, crear un nuevo registro de Stock
+            const stock = {
+              sucursal: updatedCompra.sucursal,
+              producto: detCompraItem.producto._id,
+              cantidad: detCompraItem.cantidad,
+              // ... otros campos necesarios para el Stock
+            };
+            const newStock = new StockModel(stock);
+            await newStock.save();
+          }
         }
       }
     }
@@ -305,7 +315,7 @@ export const editarCompra = async (data) => {
 
 // Eliminar una compra
 export const eliminarCompra = async (item) => {
-  try { 
+  try {
     await CompraModel.findOneAndUpdate(item, {
       estado: item.estado === "ANULADA" ? "EN PROCESO" : "ANULADA",
     });
@@ -339,7 +349,7 @@ export const getDetCompras = async (req = request, res = response) => {
         },
       },
       {
-        $unwind: "$producto",
+        $unwind: "$producto", //[{}] => {}
       },
       {
         $project: {

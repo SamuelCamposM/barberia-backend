@@ -17,5 +17,9 @@ export const StockSchema = new Schema({
     required: true,
     min: 0,
   },
+  cantidadOld: {
+    type: Number,
+    default: 0,
+  },
 });
 StockSchema.plugin(mongooseAggregatePaginate);
