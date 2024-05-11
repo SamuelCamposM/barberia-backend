@@ -1,10 +1,10 @@
-import { CompraModel, StockModel } from "../../models";
+import { VentaModel, StockModel } from "../../models";
 import { response, request } from "express";
-import { DetCompraModel } from "../../models";
+import { DetVentaModel } from "../../models";
 import mongoose from "mongoose";
 
-// Obtener compras con paginación y búsqueda
-export const getCompras = async (req, res) => {
+// Obtener ventas con paginación y búsqueda
+export const getVentas = async (req, res) => {
   try {
     const {
       pagination: { page, limit },
@@ -12,8 +12,13 @@ export const getCompras = async (req, res) => {
       busqueda,
       estado,
     } = req.body;
-
-    const aggregation = CompraModel.aggregate([
+    console.log({
+      pagination: { page, limit },
+      sort: { campo, asc },
+      busqueda,
+      estado,
+    });
+    const aggregation = VentaModel.aggregate([
       {
         $match: {
           estado: estado,
@@ -21,14 +26,14 @@ export const getCompras = async (req, res) => {
       },
       {
         $lookup: {
-          from: "proveedors",
-          localField: "proveedor",
+          from: "usuarios",
+          localField: "cliente",
           foreignField: "_id",
-          as: "proveedor",
+          as: "cliente",
         },
       },
       {
-        $unwind: "$proveedor",
+        $unwind: "$cliente",
       },
       {
         $lookup: {
@@ -71,16 +76,14 @@ export const getCompras = async (req, res) => {
           estado: 1,
           gastoTotal: 1,
           totalProductos: 1,
-          "proveedor._id": 1,
-          "proveedor.nombreCompleto": 1, 
+          "cliente._id": 1,
+          "cliente.nombreCompleto": 1,
           "rUsuario._id": 1,
           "rUsuario.dui": 1,
           "rUsuario.name": 1,
-          "rUsuario.lastname": 1,
           "eUsuario._id": 1,
           "eUsuario.dui": 1,
           "eUsuario.name": 1,
-          "eUsuario.lastname": 1,
           "sucursal._id": 1,
           "sucursal.name": 1,
           "sucursal.tel": 1,
@@ -90,7 +93,7 @@ export const getCompras = async (req, res) => {
       {
         $match: {
           $or: [
-            { "proveedor.nombreCompleto": new RegExp(busqueda, "i") },
+            { "cliente.nombreCompleto": new RegExp(busqueda, "i") },
             { "sucursal.name": new RegExp(busqueda, "i") },
             // Agrega más campos de búsqueda si es necesario
           ],
@@ -103,7 +106,7 @@ export const getCompras = async (req, res) => {
       },
     ]);
 
-    const result = await CompraModel.aggregatePaginate(aggregation, {
+    const result = await VentaModel.aggregatePaginate(aggregation, {
       page,
       limit,
     });
@@ -112,18 +115,18 @@ export const getCompras = async (req, res) => {
     console.log({ error });
     return res.status(500).json({
       error: true,
-      msg: "Hubo un error al obtener las compras",
+      msg: "Hubo un error al obtener las ventas",
     });
   }
 };
 
-// Buscar compras por proveedor o sucursal
-export const searchCompra = async (req, res) => {
+// Buscar ventas por cliente o sucursal
+export const searchVenta = async (req, res) => {
   const { search } = req.body;
   try {
-    const response = await CompraModel.find({
+    const response = await VentaModel.find({
       $or: [
-        { "proveedor.nombreCompleto": new RegExp(search, "i") },
+        { "cliente.nombreCompleto": new RegExp(search, "i") },
         { "sucursal.name": new RegExp(search, "i") },
         // Agrega más campos de búsqueda si es necesario
       ],
@@ -135,20 +138,20 @@ export const searchCompra = async (req, res) => {
     console.log({ error });
     return res.status(500).json({
       error: true,
-      msg: "Hubo un error al buscar las compras",
+      msg: "Hubo un error al buscar las ventas",
     });
   }
 };
 
 // SOCKET
 
-const restCompra = {
+const restVenta = {
   estado: "EN PROCESO",
   gastoTotal: 0,
   totalProductos: 0,
   createdAt: "",
   updatedAt: "",
-  proveedor: { _id: "6634665d6d6da52b9d75ddb6", nombreCompleto: "asdads" },
+  cliente: { _id: "6634665d6d6da52b9d75ddb6", nombreCompleto: "asdads" },
   rUsuario: {
     _id: "65f9f915df006187fc65b648",
     name: "Samuel",
@@ -162,9 +165,9 @@ const restCompra = {
   },
   crud: { agregando: true },
 };
-const detComprasData = [
+const detVentasData = [
   {
-    compra: "",
+    venta: "",
     cantidad: 10,
     precioUnidad: 50,
     total: 500,
@@ -174,44 +177,44 @@ const detComprasData = [
   },
 ];
 
-// Agregar una nueva compra
-export const agregarCompra = async (data) => {
+// Agregar una nueva venta
+export const agregarVenta = async (data) => {
   try {
-    const { detComprasData, ...restCompra } = data;
+    const { detVentasData, ...restVenta } = data;
 
-    // Adaptar el objeto item al esquema de Compra
-    const compra = {
-      ...restCompra,
-      proveedor: restCompra.proveedor._id,
-      sucursal: restCompra.sucursal._id,
-      gastoTotal: restCompra.gastoTotal,
-      rUsuario: restCompra.rUsuario._id,
-      estado: restCompra.estado,
+    // Adaptar el objeto item al esquema de Venta
+    const venta = {
+      ...restVenta,
+      cliente: restVenta.cliente._id,
+      sucursal: restVenta.sucursal._id,
+      gastoTotal: restVenta.gastoTotal,
+      rUsuario: restVenta.rUsuario._id,
+      estado: restVenta.estado,
       eUsuario: null,
     };
 
-    const newCompra = new CompraModel(compra);
-    await newCompra.save();
+    const newVenta = new VentaModel(venta);
+    await newVenta.save();
 
-    // Crear registros de DetCompra para cada elemento en detComprasData
-    for (const detCompraItem of detComprasData) {
-      const detCompra = {
-        compra: newCompra._id,
-        producto: detCompraItem.producto._id,
-        cantidad: detCompraItem.cantidad,
-        precioUnidad: detCompraItem.precioUnidad,
-        total: detCompraItem.total,
+    // Crear registros de DetVenta para cada elemento en detVentasData
+    for (const detVentaItem of detVentasData) {
+      const detVenta = {
+        venta: newVenta._id,
+        producto: detVentaItem.producto._id,
+        cantidad: detVentaItem.cantidad,
+        precioUnidad: detVentaItem.precioUnidad,
+        total: detVentaItem.total,
       };
 
-      const newDetCompra = new DetCompraModel(detCompra);
-      await newDetCompra.save();
+      const newDetVenta = new DetVentaModel(detVenta);
+      await newDetVenta.save();
     }
 
     return {
       item: {
-        ...restCompra,
-        _id: newCompra._id,
-        createdAt: newCompra.createdAt,
+        ...restVenta,
+        _id: newVenta._id,
+        createdAt: newVenta.createdAt,
       },
       error: false,
     };
@@ -219,81 +222,81 @@ export const agregarCompra = async (data) => {
     console.log({ error });
     return {
       error: true,
-      msg: String(error) || "Hubo un error al crear la compra",
+      msg: String(error) || "Hubo un error al crear la venta",
     };
   }
 };
 
-// Editar una compra existente
-export const editarCompra = async (data) => {
+// Editar una venta existente
+export const editarVenta = async (data) => {
   try {
-    // Adaptar el objeto item al esquema de Compra
-    const { detComprasData, ...restCompra } = data;
-    const compra = {
-      ...restCompra,
-      proveedor: data.proveedor._id,
+    // Adaptar el objeto item al esquema de Venta
+    const { detVentasData, ...restVenta } = data;
+    const venta = {
+      ...restVenta,
+      cliente: data.cliente._id,
       sucursal: data.sucursal._id,
       gastoTotal: data.gastoTotal,
       rUsuario: data.rUsuario._id,
       estado: data.estado,
       eUsuario: data.eUsuario._id,
     };
-    // Actualizar la compra
-    const updatedCompra = await CompraModel.findOneAndUpdate(
+    // Actualizar la venta
+    const updatedVenta = await VentaModel.findOneAndUpdate(
       { _id: data._id },
-      compra,
+      venta,
       {
         new: true,
       }
     );
 
-    // Manejar las operaciones CRUD en detComprasData
-    for (const detCompraItem of detComprasData) {
-      if (detCompraItem?.crud?.nuevo) {
-        // Agregar un nuevo DetCompra
-        const newDetCompra = new DetCompraModel({
-          compra: updatedCompra._id,
-          producto: detCompraItem.producto._id,
-          cantidad: detCompraItem.cantidad,
-          precioUnidad: detCompraItem.precioUnidad,
-          total: detCompraItem.total,
+    // Manejar las operaciones CRUD en detVentasData
+    for (const detVentaItem of detVentasData) {
+      if (detVentaItem?.crud?.nuevo) {
+        // Agregar un nuevo DetVenta
+        const newDetVenta = new DetVentaModel({
+          venta: updatedVenta._id,
+          producto: detVentaItem.producto._id,
+          cantidad: detVentaItem.cantidad,
+          precioUnidad: detVentaItem.precioUnidad,
+          total: detVentaItem.total,
         });
-        await newDetCompra.save();
-      } else if (detCompraItem?.crud?.editado) {
-        // Editar un DetCompra existente
-        await DetCompraModel.findOneAndUpdate(
-          { _id: detCompraItem._id },
-          detCompraItem,
+        await newDetVenta.save();
+      } else if (detVentaItem?.crud?.editado) {
+        // Editar un DetVenta existente
+        await DetVentaModel.findOneAndUpdate(
+          { _id: detVentaItem._id },
+          detVentaItem,
           {
             new: true,
           }
         );
-      } else if (detCompraItem.crud?.eliminado) {
-        // Eliminar un DetCompra
-        await DetCompraModel.findByIdAndRemove(detCompraItem._id);
+      } else if (detVentaItem.crud?.eliminado) {
+        // Eliminar un DetVenta
+        await DetVentaModel.findByIdAndRemove(detVentaItem._id);
       }
     }
 
-    // Crear Stocks si la compra es FINALIZADA
+    // Crear Stocks si la venta es FINALIZADA
     if (data.estado === "FINALIZADA") {
-      for (const detCompraItem of detComprasData) {
-        if (!detCompraItem.crud?.eliminado) {
+      for (const detVentaItem of detVentasData) {
+        if (!detVentaItem.crud?.eliminado) {
           // Buscar si ya existe un registro de Stock para la sucursal y producto
           const existingStock = await StockModel.findOne({
-            sucursal: updatedCompra.sucursal,
-            producto: detCompraItem.producto._id,
+            sucursal: updatedVenta.sucursal,
+            producto: detVentaItem.producto._id,
           });
 
           if (existingStock) {
             // Si existe, actualizar la cantidad de stock existente
-            existingStock.cantidad += detCompraItem.cantidad;
+            existingStock.cantidad += detVentaItem.cantidad;
             await existingStock.save();
           } else {
             // Si no existe, crear un nuevo registro de Stock
             const stock = {
-              sucursal: updatedCompra.sucursal,
-              producto: detCompraItem.producto._id,
-              cantidad: detCompraItem.cantidad,
+              sucursal: updatedVenta.sucursal,
+              producto: detVentaItem.producto._id,
+              cantidad: detVentaItem.cantidad,
               // ... otros campos necesarios para el Stock
             };
             const newStock = new StockModel(stock);
@@ -308,15 +311,15 @@ export const editarCompra = async (data) => {
     console.log({ error });
     return {
       error: true,
-      msg: String(error) || "Hubo un error al actualizar la compra",
+      msg: String(error) || "Hubo un error al actualizar la venta",
     };
   }
 };
 
-// Eliminar una compra
-export const eliminarCompra = async (item) => {
+// Eliminar una venta
+export const eliminarVenta = async (item) => {
   try {
-    await CompraModel.findOneAndUpdate(item, {
+    await VentaModel.findOneAndUpdate(item, {
       estado: item.estado === "ANULADA" ? "EN PROCESO" : "ANULADA",
     });
     return { error: false };
@@ -324,20 +327,20 @@ export const eliminarCompra = async (item) => {
     console.log({ error });
     return {
       error: true,
-      msg: String(error) || "Hubo un error al eliminar la compra",
+      msg: String(error) || "Hubo un error al eliminar la venta",
     };
   }
 };
-export const getDetCompras = async (req = request, res = response) => {
+export const getDetVentas = async (req = request, res = response) => {
   try {
     const {
       sort: { campo, asc },
-      compra,
+      venta,
     } = req.body;
-    const aggregation = DetCompraModel.aggregate([
+    const aggregation = DetVentaModel.aggregate([
       {
         $match: {
-          compra: new mongoose.Types.ObjectId(compra),
+          venta: new mongoose.Types.ObjectId(venta),
         },
       },
       {
@@ -353,7 +356,7 @@ export const getDetCompras = async (req = request, res = response) => {
       },
       {
         $project: {
-          compra: true,
+          venta: true,
           _id: true,
           producto: {
             _id: true,
@@ -379,7 +382,7 @@ export const getDetCompras = async (req = request, res = response) => {
     return res.status(500).json({
       error: true,
       msg:
-        String(error) || "Hubo un error al obtener los detalles de las compras",
+        String(error) || "Hubo un error al obtener los detalles de las ventas",
     });
   }
 };

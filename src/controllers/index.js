@@ -11,4 +11,5 @@ export * from "./producto";
 export * from "./proveedor";
 export * from "./sucursal";
 export * from "./usuario";
-export * from "./compra"; 
+export * from "./compra";  
+export * from "./venta";  
