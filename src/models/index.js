@@ -3,6 +3,7 @@ export * from "./Cita";
 export * from "./Compra";
 export * from "./Depto";
 export * from "./DetCompra";
+export * from "./DetVenta";
 export * from "./Marca";
 export * from "./Mensaje";
 export * from "./Municipio";

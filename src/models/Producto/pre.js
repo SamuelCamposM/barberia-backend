@@ -18,11 +18,11 @@ ProductoSchema.pre("findOneAndUpdate", async function (next) {
   }
   next();
 });
-
 ProductoSchema.pre("save", async function (next) {
-  const producto = this;
+  const producto = this; 
   const existingProducto = await ProductoModel.findOne({
     name: producto.name,
+    _id: { $ne: producto._id }, // Aquí está la nueva condición
   });
 
   if (existingProducto) {

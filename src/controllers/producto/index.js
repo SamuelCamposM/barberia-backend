@@ -81,6 +81,7 @@ export const getProductos = async (req, res = response) => {
             _id: 1,
           },
           stockTotal: 1,
+          stocks: 1,
           "rUsuario._id": 1,
           "rUsuario.dui": 1,
           "rUsuario.name": 1,
@@ -131,6 +132,43 @@ export const searchProducto = async (req, res = response) => {
     });
   }
 };
+export const searchProductoForVenta = async (req, res = response) => {
+  const { search } = req.body;
+  try {
+    const response = await ProductoModel.find({
+      name: new RegExp(search, "i"),
+      estado: true,
+    })
+      .select(["name", "price", "stocks"]) // Excluye la propiedad __v
+      .limit(30);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      error: true,
+      msg: "Hubo un error al obtener los productos",
+    });
+  }
+};
+
+// export const searchProductoBySucursalStock = async (req, res = response) => {
+//   const { search } = req.body;
+//   try {
+//     const response = await ProductoModel.find({
+//       name: new RegExp(search, "i"),
+//       estado: true,
+//     })
+//       .select(["name"]) // Excluye la propiedad __v
+//       .limit(30);
+//     res.status(200).json(response);
+//   } catch (error) {
+//     console.log({ error });
+//     return res.status(500).json({
+//       error: true,
+//       msg: "Hubo un error al obtener los productos",
+//     });
+//   }
+// };
 
 // SOCKET
 export const agregarProducto = async (data) => {

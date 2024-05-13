@@ -40,7 +40,7 @@ export const loginUsuario = async (req, res = response) => {
     if (!usuario.estado) {
       return res.status(401).json({
         error: true,
-        msg: "El usuario no esta inactivo",
+        msg: "El usuario esta inactivo",
       });
     }
     // MATCH PASSWORD
@@ -77,7 +77,7 @@ export const renewToken = async (req, res = response) => {
     if (!usuario.estado) {
       return res.status(401).json({
         error: true,
-        msg: "El usuario no esta inactivo",
+        msg: "El usuario esta inactivo",
       });
     }
     res.json({

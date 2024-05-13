@@ -102,3 +102,27 @@ export const eliminarUsuario = async (item) => {
     };
   }
 };
+
+export const searchCliente = async (req, res = response) => {
+  const { search } = req.body;
+  try {
+    const response = await UsuarioModel.find({
+      $or: [
+        { name: new RegExp(search, "i") },
+        { lastname: new RegExp(search, "i") },
+      ],
+      rol: "CLIENTE",
+      estado: true,
+    })
+      .select(["name", "lastname"])
+      .limit(30);
+    console.log({ response });
+    res.status(200).json(response);
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      error: true,
+      msg: "Hubo un error al obtener los clientes",
+    });
+  }
+};

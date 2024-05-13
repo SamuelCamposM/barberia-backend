@@ -1,6 +1,19 @@
 import { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
+const StockSchema = new Schema({
+  sucursal: {
+    type: Schema.Types.ObjectId,
+    ref: "Sucursal",
+    required: true,
+  },
+  cantidad: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+});
+
 export const ProductoSchema = new Schema(
   {
     photos: {
@@ -48,6 +61,7 @@ export const ProductoSchema = new Schema(
       ref: "Usuario",
     },
     stockTotal: { default: 0, type: Number },
+    stocks: [StockSchema],
     estado: {
       type: Boolean,
       default: true,

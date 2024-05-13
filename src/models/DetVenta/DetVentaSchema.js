@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 export const DetVentaSchema = new Schema({
-  compra: {
+  venta: {
     type: Schema.Types.ObjectId,
     ref: "Venta",
     required: true,
@@ -16,6 +16,9 @@ export const DetVentaSchema = new Schema({
     type: Number,
   },
   precioUnidad: {
+    type: Number,
+  },
+  stock: {
     type: Number,
   },
   total: {

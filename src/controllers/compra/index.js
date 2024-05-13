@@ -1,4 +1,4 @@
-import { CompraModel, StockModel } from "../../models";
+import { CompraModel, ProductoModel, StockModel } from "../../models";
 import { response, request } from "express";
 import { DetCompraModel } from "../../models";
 import mongoose from "mongoose";
@@ -72,7 +72,7 @@ export const getCompras = async (req, res) => {
           gastoTotal: 1,
           totalProductos: 1,
           "proveedor._id": 1,
-          "proveedor.nombreCompleto": 1, 
+          "proveedor.nombreCompleto": 1,
           "rUsuario._id": 1,
           "rUsuario.dui": 1,
           "rUsuario.name": 1,
@@ -278,27 +278,44 @@ export const editarCompra = async (data) => {
     if (data.estado === "FINALIZADA") {
       for (const detCompraItem of detComprasData) {
         if (!detCompraItem.crud?.eliminado) {
-          // Buscar si ya existe un registro de Stock para la sucursal y producto
-          const existingStock = await StockModel.findOne({
-            sucursal: updatedCompra.sucursal,
-            producto: detCompraItem.producto._id,
+          // Buscar el Producto
+          const existingProduct = await ProductoModel.findOne({
+            _id: detCompraItem.producto._id,
           });
+          if (!existingProduct) {
+            return {
+              error: true,
+              msg: String(error) || "Hubo un error al actualizar la compra",
+            };
+          }
 
-          if (existingStock) {
-            // Si existe, actualizar la cantidad de stock existente
-            existingStock.cantidad += detCompraItem.cantidad;
-            await existingStock.save();
+          // Buscar si ya existe un stock para la sucursal en el Producto
+          const stock = existingProduct.stocks.find(
+            (stock) =>
+              stock.sucursal.toString() === updatedCompra.sucursal.toString()
+          );
+
+          if (stock) {
+            // Si existe, actualizar la cantidad del stock
+            stock.cantidad += detCompraItem.cantidad;
           } else {
-            // Si no existe, crear un nuevo registro de Stock
-            const stock = {
+            // Si no existe, añadir un nuevo stock al array de stocks del Producto
+            const newStock = {
               sucursal: updatedCompra.sucursal,
-              producto: detCompraItem.producto._id,
               cantidad: detCompraItem.cantidad,
               // ... otros campos necesarios para el Stock
             };
-            const newStock = new StockModel(stock);
-            await newStock.save();
+            existingProduct.stocks.push(newStock);
           }
+
+          // Calcular el stockTotal sumando las cantidades de todos los stocks
+          existingProduct.stockTotal = existingProduct.stocks.reduce(
+            (total, stock) => total + stock.cantidad,
+            0
+          );
+
+          // Guardar el Producto actualizado
+          await existingProduct.save();
         }
       }
     }

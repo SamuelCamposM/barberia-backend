@@ -1,4 +1,4 @@
-import { VentaModel, StockModel } from "../../models";
+import { VentaModel, StockModel, ProductoModel } from "../../models";
 import { response, request } from "express";
 import { DetVentaModel } from "../../models";
 import mongoose from "mongoose";
@@ -77,7 +77,8 @@ export const getVentas = async (req, res) => {
           gastoTotal: 1,
           totalProductos: 1,
           "cliente._id": 1,
-          "cliente.nombreCompleto": 1,
+          "cliente.name": 1,
+          "cliente.lastname": 1,
           "rUsuario._id": 1,
           "rUsuario.dui": 1,
           "rUsuario.name": 1,
@@ -93,7 +94,7 @@ export const getVentas = async (req, res) => {
       {
         $match: {
           $or: [
-            { "cliente.nombreCompleto": new RegExp(busqueda, "i") },
+            { "cliente.name": new RegExp(busqueda, "i") },
             { "sucursal.name": new RegExp(busqueda, "i") },
             // Agrega más campos de búsqueda si es necesario
           ],
@@ -126,7 +127,7 @@ export const searchVenta = async (req, res) => {
   try {
     const response = await VentaModel.find({
       $or: [
-        { "cliente.nombreCompleto": new RegExp(search, "i") },
+        { "cliente.name": new RegExp(search, "i") },
         { "sucursal.name": new RegExp(search, "i") },
         // Agrega más campos de búsqueda si es necesario
       ],
@@ -144,39 +145,31 @@ export const searchVenta = async (req, res) => {
 };
 
 // SOCKET
-
-const restVenta = {
-  estado: "EN PROCESO",
-  gastoTotal: 0,
-  totalProductos: 0,
-  createdAt: "",
-  updatedAt: "",
-  cliente: { _id: "6634665d6d6da52b9d75ddb6", nombreCompleto: "asdads" },
-  rUsuario: {
-    _id: "65f9f915df006187fc65b648",
-    name: "Samuel",
-    dui: "SIN DUI",
-  },
-  eUsuario: { _id: "", dui: "", name: "" },
-  sucursal: {
-    _id: "661c533de1820425e29bd4f1",
-    name: "SUCURSAL EL AHUACHAPAN",
-    tel: "awda",
-  },
-  crud: { agregando: true },
-};
-const detVentasData = [
-  {
-    venta: "",
-    cantidad: 10,
-    precioUnidad: 50,
-    total: 500,
-    producto: [Object],
-    crud: [Object],
-    _id: "nuevo-4d1a2de5-667b-4ac9-b9b6-e16d1f32a0f0",
-  },
-];
-
+// const detVentasData = [
+//   {
+//     venta: "",
+//     cantidad: 50,
+//     precioUnidad: 50,
+//     total: 2500,
+//     stock: 660,
+//     producto: [Object],
+//     crud: [Object],
+//     _id: "nuevo-948e8841-18a5-45aa-9b5e-0feb2d859815",
+//   },
+// ];
+// const newVenta = {
+//   cliente: new ObjectId("661dd907b25846c340b29f01"),
+//   sucursal: new ObjectId("661c533de1820425e29bd4f1"),
+//   totalProductos: 50,
+//   gastoTotal: 2500,
+//   rUsuario: new ObjectId("65f9f915df006187fc65b648"),
+//   eUsuario: null,
+//   estado: true,
+//   _id: new ObjectId("6641672b81e15fb033cb4b18"),
+//   createdAt: "2024-05-13T01:04:43.552Z",
+//   updatedAt: "2024-05-13T01:04:43.552Z",
+//   __v: 0,
+// };
 // Agregar una nueva venta
 export const agregarVenta = async (data) => {
   try {
@@ -187,9 +180,7 @@ export const agregarVenta = async (data) => {
       ...restVenta,
       cliente: restVenta.cliente._id,
       sucursal: restVenta.sucursal._id,
-      gastoTotal: restVenta.gastoTotal,
       rUsuario: restVenta.rUsuario._id,
-      estado: restVenta.estado,
       eUsuario: null,
     };
 
@@ -199,17 +190,43 @@ export const agregarVenta = async (data) => {
     // Crear registros de DetVenta para cada elemento en detVentasData
     for (const detVentaItem of detVentasData) {
       const detVenta = {
-        venta: newVenta._id,
+        ...detVentaItem,
+        venta: newVenta._id, //LLAVE FORANEA
         producto: detVentaItem.producto._id,
-        cantidad: detVentaItem.cantidad,
-        precioUnidad: detVentaItem.precioUnidad,
-        total: detVentaItem.total,
       };
-
+      delete detVenta._id;
       const newDetVenta = new DetVentaModel(detVenta);
       await newDetVenta.save();
-    }
 
+      // Buscar el Producto
+      const existingProduct = await ProductoModel.findOne({
+        _id: detVentaItem.producto._id,
+      });
+      if (!existingProduct) {
+        return {
+          error: true,
+          msg: String(error) || "No se encontró un producto",
+        };
+      }
+
+      // Buscar si ya existe un stock para la sucursal en el Producto
+      const stock = existingProduct.stocks.find(
+        (stock) => stock.sucursal.toString() === newVenta.sucursal.toString()
+      );
+
+      if (stock) {
+        // Si existe, actualizar la cantidad del stock
+        stock.cantidad -= detVentaItem.cantidad;
+      }
+      // Calcular el stockTotal sumando las cantidades de todos los stocks
+      existingProduct.stockTotal = existingProduct.stocks.reduce(
+        (total, stock) => total + stock.cantidad,
+        0
+      );
+
+      // Guardar el Producto actualizado
+      await existingProduct.save();
+    }
     return {
       item: {
         ...restVenta,
@@ -250,59 +267,38 @@ export const editarVenta = async (data) => {
       }
     );
 
-    // Manejar las operaciones CRUD en detVentasData
-    for (const detVentaItem of detVentasData) {
-      if (detVentaItem?.crud?.nuevo) {
-        // Agregar un nuevo DetVenta
-        const newDetVenta = new DetVentaModel({
-          venta: updatedVenta._id,
-          producto: detVentaItem.producto._id,
-          cantidad: detVentaItem.cantidad,
-          precioUnidad: detVentaItem.precioUnidad,
-          total: detVentaItem.total,
-        });
-        await newDetVenta.save();
-      } else if (detVentaItem?.crud?.editado) {
-        // Editar un DetVenta existente
-        await DetVentaModel.findOneAndUpdate(
-          { _id: detVentaItem._id },
-          detVentaItem,
-          {
-            new: true,
-          }
-        );
-      } else if (detVentaItem.crud?.eliminado) {
-        // Eliminar un DetVenta
-        await DetVentaModel.findByIdAndRemove(detVentaItem._id);
-      }
-    }
-
-    // Crear Stocks si la venta es FINALIZADA
-    if (data.estado === "FINALIZADA") {
+    // Crear registros de DetVenta para cada elemento en detVentasData
+    if (!updatedVenta.estado) {
       for (const detVentaItem of detVentasData) {
-        if (!detVentaItem.crud?.eliminado) {
-          // Buscar si ya existe un registro de Stock para la sucursal y producto
-          const existingStock = await StockModel.findOne({
-            sucursal: updatedVenta.sucursal,
-            producto: detVentaItem.producto._id,
-          });
-
-          if (existingStock) {
-            // Si existe, actualizar la cantidad de stock existente
-            existingStock.cantidad += detVentaItem.cantidad;
-            await existingStock.save();
-          } else {
-            // Si no existe, crear un nuevo registro de Stock
-            const stock = {
-              sucursal: updatedVenta.sucursal,
-              producto: detVentaItem.producto._id,
-              cantidad: detVentaItem.cantidad,
-              // ... otros campos necesarios para el Stock
-            };
-            const newStock = new StockModel(stock);
-            await newStock.save();
-          }
+        // Buscar el Producto
+        const existingProduct = await ProductoModel.findOne({
+          _id: detVentaItem.producto._id,
+        });
+        if (!existingProduct) {
+          return {
+            error: true,
+            msg: String(error) || "No se encontró un producto",
+          };
         }
+
+        // Buscar si ya existe un stock para la sucursal en el Producto
+        const stock = existingProduct.stocks.find(
+          (stock) => stock.sucursal.toString() === venta.sucursal.toString()
+        );
+
+        if (stock) {
+          // Si existe, actualizar la cantidad del stock
+          stock.cantidad += detVentaItem.cantidad;
+        }
+        
+        // Calcular el stockTotal sumando las cantidades de todos los stocks
+        existingProduct.stockTotal = existingProduct.stocks.reduce(
+          (total, stock) => total + stock.cantidad,
+          0
+        );
+        console.log(existingProduct.stockTotal);
+        // Guardar el Producto actualizado
+        await existingProduct.save();
       }
     }
 
@@ -363,6 +359,7 @@ export const getDetVentas = async (req = request, res = response) => {
             name: true,
           },
           total: true,
+          stock: true,
           cantidad: true,
           precioUnidad: true,
         },
