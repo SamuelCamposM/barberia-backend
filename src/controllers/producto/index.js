@@ -151,6 +151,27 @@ export const searchProductoForVenta = async (req, res = response) => {
   }
 };
 
+export const getProductoStock = async (req, res = response) => {
+  const { _id } = req.body;
+  console.log(_id);
+  try {
+    const response = await ProductoModel.findOne({ _id })
+      .populate({
+        path: "stocks.sucursal",
+        select: ["name", "tel"], // selecciona sólo el campo 'name' y excluye el campo '_id'
+      })
+      .select("stocks -_id"); // sel
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      error: true,
+      msg: "Hubo un error al obtener los productos",
+    });
+  }
+};
+
 // export const searchProductoBySucursalStock = async (req, res = response) => {
 //   const { search } = req.body;
 //   try {

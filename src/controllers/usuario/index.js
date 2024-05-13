@@ -115,8 +115,7 @@ export const searchCliente = async (req, res = response) => {
       estado: true,
     })
       .select(["name", "lastname"])
-      .limit(30);
-    console.log({ response });
+      .limit(30); 
     res.status(200).json(response);
   } catch (error) {
     console.log({ error });
