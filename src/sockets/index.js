@@ -9,3 +9,4 @@ export * from "./producto";
 export * from "./usuario";
 export * from "./compra"; 
 export * from "./venta"; 
+export * from "./cita"; 

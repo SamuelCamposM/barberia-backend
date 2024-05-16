@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema } from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const CitaSchema = new Schema(
+export const CitaSchema = new Schema(
   {
     titulo: {
       type: String,
@@ -23,24 +24,19 @@ const CitaSchema = new Schema(
       ref: "Usuario",
       required: true,
     },
-    estado: {
+    estadoCita: {
       type: String,
-      enum: ["ACTIVO", "PENDIENTE", "FINALIZADA"], // Aquí defines los valores permitidos
-      default: "ACTIVO", // Valor por defecto
+      enum: ["PENDIENTE", "FINALIZADA", "ANULADA", "AUSENCIA"], // Aquí defines los valores permitidos
+      default: "ACTIVA", // Valor por defecto
     },
     rUsuario: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
       required: true,
     },
-    eUsuario: {
-      type: Schema.Types.ObjectId,
-      ref: "Usuario",
-    },
   },
   {
     timestamps: true,
   }
 );
-
-export const CitaModel = model("Cita", CitaSchema);
+CitaSchema.plugin(mongooseAggregatePaginate);

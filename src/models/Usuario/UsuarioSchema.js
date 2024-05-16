@@ -47,6 +47,10 @@ export const UsuarioSchema = new Schema(
       enum: roles,
       default: "CLIENTE",
     },
+    sucursal: {
+      type: Schema.Types.ObjectId,
+      ref: "Sucursal",
+    },
     estado: {
       type: Boolean, // Aquí defines los valores permitidos
       default: true, // Valor por defecto

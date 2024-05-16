@@ -13,3 +13,4 @@ export * from "./sucursal";
 export * from "./usuario";
 export * from "./compra";  
 export * from "./venta";  
+export * from "./cita";  

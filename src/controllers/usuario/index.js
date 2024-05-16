@@ -1,6 +1,7 @@
 import { deleteFile } from "../../helpers";
 import { UsuarioModel } from "../../models";
 import bcryptjs from "bcryptjs";
+
 export const getUsuariosTable = async (req, res = response) => {
   try {
     const {
@@ -10,6 +11,7 @@ export const getUsuariosTable = async (req, res = response) => {
       rol,
       estado,
     } = req.body;
+
     const aggregation = UsuarioModel.aggregate([
       {
         $match: {
@@ -19,6 +21,20 @@ export const getUsuariosTable = async (req, res = response) => {
             { lastname: new RegExp(busqueda, "i") },
             { email: new RegExp(busqueda, "i") },
           ],
+        },
+      },
+      {
+        $lookup: {
+          from: "sucursals",
+          localField: "sucursal",
+          foreignField: "_id",
+          as: "sucursal",
+        },
+      },
+      {
+        $unwind: {
+          path: "$sucursal",
+          preserveNullAndEmptyArrays: true, // Preserva los documentos que no tienen una sucursal
         },
       },
       {
@@ -45,13 +61,16 @@ export const getUsuariosTable = async (req, res = response) => {
 
 // SOCKET
 export const agregarUsuario = async (item) => {
+  const usuario = {
+    ...item,
+    sucursal: item?.sucursal?._id,
+  };
   try {
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
-    item.password = bcryptjs.hashSync(item.newPassword, salt);
+    usuario.password = bcryptjs.hashSync(usuario.newPassword, salt);
 
-    const newUsuario = new UsuarioModel(item);
-
+    const newUsuario = new UsuarioModel(usuario);
     await newUsuario.save();
     return { item: newUsuario, error: false };
   } catch (error) {
@@ -69,15 +88,20 @@ export const editarUsuario = async ({ data, eliminados }) => {
       await deleteFile(element);
     });
 
+    const usuario = {
+      ...data,
+      sucursal: data?.sucursal?._id,
+    };
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
     const password =
-      data.newPassword === ""
-        ? data.password
-        : bcryptjs.hashSync(data.newPassword, salt);
+      usuario.newPassword === ""
+        ? usuario.password
+        : bcryptjs.hashSync(usuario.newPassword, salt);
+
     await UsuarioModel.findOneAndUpdate(
-      { _id: data._id },
-      { ...data, password }
+      { _id: usuario._id },
+      { ...usuario, password }
     );
     return { error: false };
   } catch (error) {
@@ -114,14 +138,37 @@ export const searchCliente = async (req, res = response) => {
       rol: "CLIENTE",
       estado: true,
     })
-      .select(["name", "lastname"])
-      .limit(30); 
+      .select(["name", "lastname", "tel"])
+      .limit(30);
     res.status(200).json(response);
   } catch (error) {
     console.log({ error });
     return res.status(500).json({
       error: true,
       msg: "Hubo un error al obtener los clientes",
+    });
+  }
+};
+export const searchEmpleadoBySucursal = async (req, res = response) => {
+  const { search, sucursal } = req.body;
+  try {
+    const response = await UsuarioModel.find({
+      $or: [
+        { name: new RegExp(search, "i") },
+        { lastname: new RegExp(search, "i") },
+      ],
+      sucursal,
+      rol: "EMPLEADO",
+      estado: true,
+    })
+      .select(["dui", "name", "lastname", "tel"])
+      .limit(30);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      error: true,
+      msg: "Hubo un error al obtener las citas",
     });
   }
 };
