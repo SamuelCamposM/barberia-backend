@@ -34,6 +34,7 @@ import {
   productoRouter,
   compraRouter,
   detCompraRouter,
+  cierreCajaRouter,
 } from "./routes";
 import { createServer } from "http";
 import socketio from "socket.io";
@@ -75,14 +76,10 @@ app.use("/api/proveedor", proveedorRouter);
 app.use("/api/compra", compraRouter);
 app.use("/api/venta", ventaRouter);
 app.use("/api/cita", citaRouter);
+app.use("/api/cierreCaja", cierreCajaRouter);
 
 const server = createServer(app);
-const io = socketio(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+const io = socketio(server, {});
 
 chatSocket(io);
 pageSocket(io);

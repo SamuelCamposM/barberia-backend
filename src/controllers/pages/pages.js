@@ -1,7 +1,7 @@
 import { response } from "express";
 import { PageModel, RolModel } from "../../models";
 
-export const getPages = async (req, res = response) => {
+export const getPages = async (req, res = response) => { 
   try {
     //  const pagesA = [
     //    "Menu",
@@ -25,8 +25,7 @@ export const getPages = async (req, res = response) => {
     //      insert: ["GERENTE"],
     //      select: ["GERENTE"],
     //      ver: ["GERENTE"],
-    //    });
-    //    console.log({ newPage });
+    //    }); 
     //    await newPage.save();
     //  });
 

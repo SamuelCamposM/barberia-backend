@@ -75,7 +75,7 @@ app.get("/api/report/pdf", (req, res) => {
               ],
             },
             {
-              image: "src/assets/dog4.jpg",
+              image: "src/assets/logo.png",
               width: 150,
             },
           ],

@@ -152,8 +152,7 @@ export const searchProductoForVenta = async (req, res = response) => {
 };
 
 export const getProductoStock = async (req, res = response) => {
-  const { _id } = req.body;
-  console.log(_id);
+  const { _id } = req.body; 
   try {
     const response = await ProductoModel.findOne({ _id })
       .populate({
@@ -235,8 +234,7 @@ export const editarProducto = async ({ data, eliminados }) => {
       ...restProducto,
       rUsuario: data.rUsuario._id,
       eUsuario: data.eUsuario._id,
-    };
-    console.log(producto);
+    }; 
     await ProductoModel.findOneAndUpdate({ _id: data._id }, producto, {
       new: true,
     });

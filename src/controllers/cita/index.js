@@ -10,13 +10,6 @@ export const getCitas = async (req, res = response) => {
       sucursal, // Agrega el _id de la sucursal aquí
     } = req.body;
 
-    console.log({
-      pagination: { page, limit },
-      sort: { campo, asc },
-      busqueda,
-      estadoCita,
-      sucursal, // Agrega el _id de la sucursal aquí
-    });
     const matchCondition = {
       $and: [{ estadoCita }],
     };
@@ -64,6 +57,7 @@ export const getCitas = async (req, res = response) => {
         $project: {
           titulo: 1,
           fecha: 1,
+          hora: 1,
           description: 1,
           sucursal: {
             _id: 1,
@@ -151,8 +145,7 @@ export const agregarCita = async (data) => {
       empleado: data.empleado._id,
       sucursal: data.sucursal._id,
       rUsuario: data.rUsuario._id,
-    };
-    console.log({ data, cita });
+    }; 
     const newCita = new CitaModel(cita);
     await newCita.save();
     return {

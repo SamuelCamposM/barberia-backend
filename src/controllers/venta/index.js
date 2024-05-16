@@ -1,8 +1,9 @@
-import { VentaModel, StockModel, ProductoModel } from "../../models";
 import { response, request } from "express";
-import { DetVentaModel } from "../../models";
 import mongoose from "mongoose";
-
+import path from "path";
+import pdfmake from "pdfmake";
+import { DetVentaModel, VentaModel, ProductoModel } from "../../models";
+import { formatearFecha } from "../../helpers/date";
 // Obtener ventas con paginación y búsqueda
 export const getVentas = async (req, res) => {
   try {
@@ -12,12 +13,6 @@ export const getVentas = async (req, res) => {
       busqueda,
       estado,
     } = req.body;
-    console.log({
-      pagination: { page, limit },
-      sort: { campo, asc },
-      busqueda,
-      estado,
-    });
     const aggregation = VentaModel.aggregate([
       {
         $match: {
@@ -82,9 +77,11 @@ export const getVentas = async (req, res) => {
           "rUsuario._id": 1,
           "rUsuario.dui": 1,
           "rUsuario.name": 1,
+          "rUsuario.lastname": 1,
           "eUsuario._id": 1,
           "eUsuario.dui": 1,
           "eUsuario.name": 1,
+          "eUsuario.lastname": 1,
           "sucursal._id": 1,
           "sucursal.name": 1,
           "sucursal.tel": 1,
@@ -145,32 +142,6 @@ export const searchVenta = async (req, res) => {
 };
 
 // SOCKET
-// const detVentasData = [
-//   {
-//     venta: "",
-//     cantidad: 50,
-//     precioUnidad: 50,
-//     total: 2500,
-//     stock: 660,
-//     producto: [Object],
-//     crud: [Object],
-//     _id: "nuevo-948e8841-18a5-45aa-9b5e-0feb2d859815",
-//   },
-// ];
-// const newVenta = {
-//   cliente: new ObjectId("661dd907b25846c340b29f01"),
-//   sucursal: new ObjectId("661c533de1820425e29bd4f1"),
-//   totalProductos: 50,
-//   gastoTotal: 2500,
-//   rUsuario: new ObjectId("65f9f915df006187fc65b648"),
-//   eUsuario: null,
-//   estado: true,
-//   _id: new ObjectId("6641672b81e15fb033cb4b18"),
-//   createdAt: "2024-05-13T01:04:43.552Z",
-//   updatedAt: "2024-05-13T01:04:43.552Z",
-//   __v: 0,
-// };
-// Agregar una nueva venta
 export const agregarVenta = async (data) => {
   try {
     const { detVentasData, ...restVenta } = data;
@@ -290,7 +261,7 @@ export const editarVenta = async (data) => {
           // Si existe, actualizar la cantidad del stock
           stock.cantidad += detVentaItem.cantidad;
         }
-        
+
         // Calcular el stockTotal sumando las cantidades de todos los stocks
         existingProduct.stockTotal = existingProduct.stocks.reduce(
           (total, stock) => total + stock.cantidad,
@@ -380,6 +351,224 @@ export const getDetVentas = async (req = request, res = response) => {
       error: true,
       msg:
         String(error) || "Hubo un error al obtener los detalles de las ventas",
+    });
+  }
+};
+export const pdfVenta = async (req, res) => {
+  try {
+    const _idVenta = req.params._idVenta;
+    console.log({ _idVenta });
+
+    // Buscar la venta
+    const venta = await VentaModel.findById(_idVenta)
+      .populate("cliente")
+      .populate("sucursal");
+
+    // Buscar los detalles de la venta
+    const detVentas = await DetVentaModel.find({ venta: _idVenta }).populate(
+      "producto"
+    );
+    console.log({ venta, detVentas });
+    console.log(new Date(venta.createdAt).toISOString());
+    // Calcular el total de la cantidad
+    let totalCantidad = detVentas.reduce(
+      (total, detVenta) => total + detVenta.cantidad,
+      0
+    );
+
+    // Calcular el total de detVenta
+    let totalDetVenta = detVentas.reduce(
+      (total, detVenta) => total + detVenta.total,
+      0
+    );
+
+    // Ahora puedes usar totalCantidad y totalDetVenta en tu documento
+
+    // Resto del código...
+    let fonts = {
+      Roboto: {
+        normal: path.join(__dirname, "../../Roboto/Roboto-Regular.ttf"),
+        bold: path.join(__dirname, "../../Roboto/Roboto-Medium.ttf"),
+        italics: path.join(__dirname, "../../Roboto/Roboto-Italic.ttf"),
+        bolditalics: path.join(
+          __dirname,
+          "../../Roboto/Roboto-MediumItalic.ttf"
+        ),
+      },
+    };
+
+    let printer = new pdfmake(fonts);
+
+    let docDefinition = {
+      content: [
+        {
+          columns: [
+            {
+              // Segunda columna
+              margin: [10, 20, 10, 10], // Añade un margen superior de 20
+              stack: [
+                {
+                  text: "Detalles de la venta",
+                  style: "clientDetailsTitle",
+                },
+                {
+                  text: [
+                    { text: "Cliente: ", bold: true },
+                    `${venta.cliente.lastname} ${venta.cliente.name}\n`, // Nombre del cliente
+                    { text: "Correo: ", bold: true },
+                    `${venta.cliente.email}\n`, // Correo del cliente
+                    { text: "Número de factura: ", bold: true },
+                    `${venta._id}\n`, // Número de factura
+                    { text: "Fecha: ", bold: true },
+                    `${formatearFecha(
+                      new Date(venta.createdAt).toISOString()
+                    )}\n`, // Fecha de la venta
+                    { text: "Total: ", bold: true },
+                    `$${venta.gastoTotal}\n`, // Total de la venta
+                    { text: "Descuentos: ", bold: true },
+                    "$0\n", // Descuentos (si los hay)
+                  ],
+                  style: "clientDetails",
+                },
+              ],
+            },
+            {
+              image: "src/assets/logo.png",
+              width: 150,
+            },
+          ],
+        },
+        {
+          text: "Detalles de la venta",
+          style: "subheader",
+          alignment: "center",
+        },
+        //   "Esta es una descripción de la factura.",
+        {
+          // Primera columna
+          table: {
+            headerRows: 1,
+            widths: ["*", "auto", 100, "*"],
+            body: [
+              [
+                { text: "Producto", style: "tableHeader" },
+                { text: "Cantidad", style: "tableHeader" },
+                { text: "Precio", style: "tableHeader" },
+                { text: "Total", style: "tableHeader" },
+              ],
+              // Detalles de la venta
+              ...detVentas.map((detVenta) => [
+                `${detVenta.producto.name}`, // Nombre del producto
+                `${detVenta.cantidad}`, // Cantidad
+                `$${detVenta.precioUnidad}`, // Precio por unidad
+                `$${detVenta.total}`, // Total
+              ]),
+              [
+                { text: "Total Final", colSpan: 2 },
+                {},
+                { text: totalCantidad },
+                { text: totalDetVenta },
+              ],
+            ],
+          },
+          layout: {
+            fillColor: function (rowIndex, node, columnIndex) {
+              return rowIndex === 0
+                ? "#BFBFBF"
+                : rowIndex % 2 === 0
+                ? "#D9D9D9"
+                : null;
+            },
+            hLineWidth: function (i, node) {
+              return i === 0 || i === node.table.body.length ? 2 : 1;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: function (i, node) {
+              return i === 0 || i === node.table.body.length ? "black" : "#eee";
+            },
+            paddingLeft: function (i, node) {
+              return 10;
+            },
+            paddingRight: function (i, node) {
+              return 10;
+            },
+            paddingTop: function (i, node) {
+              return 3;
+            },
+            paddingBottom: function (i, node) {
+              return 3;
+            },
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 22,
+          bold: true,
+          margin: [0, 20, 0, 10],
+          color: "#007481",
+        },
+        subheader: {
+          fontSize: 18,
+          bold: false,
+          italics: true,
+          margin: [0, 10, 0, 5],
+          color: "#005056",
+        },
+        invoiceTitle: {
+          fontSize: 26,
+          bold: true,
+          alignment: "right",
+          margin: [0, 40, 0, 20],
+          color: "#043263",
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 13,
+          color: "white",
+          fillColor: "#4E5D6C",
+          alignment: "center",
+        },
+
+        clientDetailsTitle: {
+          fontSize: 14,
+          bold: true,
+          color: "#043263",
+          decoration: "underline",
+          margin: [0, 0, 0, 10], // Espacio adicional debajo del título
+        },
+        clientDetails: {
+          margin: [0, 0, 0, 10], // Espacio entre los detalles del cliente y el contenido siguiente
+        },
+      },
+      defaultStyle: {
+        font: "Roboto",
+      },
+      footer: function (currentPage, pageCount) {
+        return {
+          columns: [
+            "Este documento es válido sin firma y sello.",
+            {
+              text: currentPage.toString() + " de " + pageCount,
+              alignment: "right",
+            },
+          ],
+          margin: [40, 0],
+        };
+      },
+    };
+
+    let pdfDoc = printer.createPdfKitDocument(docDefinition);
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+  } catch (error) {
+
+    return res.status(500).json({
+      error: true,
+      msg:
+        String(error) || "Hubo un error al generarl el pdf de la venta",
     });
   }
 };

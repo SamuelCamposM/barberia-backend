@@ -4,6 +4,7 @@ import bcryptjs from "bcryptjs";
 import { deleteFile, generarJwt, usuarioProps } from "../helpers";
 
 export const createUsuario = async (req, res = response) => {
+  console.log('creando usuario');
   try {
     const usuario = new UsuarioModel(req.body);
 

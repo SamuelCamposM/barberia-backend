@@ -1,30 +1,29 @@
-// import { CompraSchema } from "./CompraSchema";
-// import { DetCompraModel } from "../DetCompra";
-// import { StockModel } from "../Stock";
+import { CierreCajaModel } from "../CierreCaja";
+import { CompraSchema } from "./CompraSchema";
 
-// CompraSchema.post("findOneAndUpdate", async function (doc) {
-//   if (doc.estado === "FINALIZADA") {
-//     const detCompras = await DetCompraModel.find({ compra: doc._id });
-
-//     for (let detCompra of detCompras) {
-//       const stock = await StockModel.findOne({
-//         sucursal: doc.sucursal,
-//         producto: detCompra.producto,
-//       });
-
-//       if (stock) {
-//         // Si el stock ya existe, actualizamos la cantidad
-//         stock.cantidad += detCompra.cantidad;
-//         await stock.save();
-//       } else {
-//         // Si el stock no existe, creamos un nuevo registro
-//         const newStock = new StockModel({
-//           sucursal: doc.sucursal,
-//           producto: detCompra.producto,
-//           cantidad: detCompra.cantidad,
-//         });
-//         await newStock.save();
-//       }
-//     }
-//   }
-// });
+CompraSchema.post("findOneAndUpdate", async function (doc) {
+  if (doc.estado === "FINALIZADA") {
+    console.log({ doc });
+    // Buscar el cierre de caja del día para la sucursal específica
+    let cierre = await CierreCajaModel.findOne({
+      fecha: {
+        $gte: new Date().setHours(0, 0, 0, 0),
+        $lt: new Date().setHours(23, 59, 59, 999),
+      },
+      sucursal: doc.sucursal,
+    });
+    if (cierre) {
+      // Si existe un cierre de caja para el día, actualizarlo
+      cierre.totalCompras += doc.gastoTotal;
+      cierre.totalDinero -= doc.gastoTotal;
+      await cierre.save();
+    } else {
+      // Si no existe un cierre de caja para el día, crear uno nuevo
+      await CierreCajaModel.create({
+        sucursal: doc.sucursal,
+        totalCompras: doc.gastoTotal,
+        totalDinero: -doc.gastoTotal,
+      });
+    }
+  }
+});

@@ -1,8 +1,10 @@
-import { CompraModel, ProductoModel, StockModel } from "../../models";
+import { CompraModel, ProductoModel } from "../../models";
 import { response, request } from "express";
 import { DetCompraModel } from "../../models";
 import mongoose from "mongoose";
-
+import path from "path";
+import pdfmake from "pdfmake";
+import { formatearFecha } from "../../helpers/date";
 // Obtener compras con paginación y búsqueda
 export const getCompras = async (req, res) => {
   try {
@@ -397,6 +399,223 @@ export const getDetCompras = async (req = request, res = response) => {
       error: true,
       msg:
         String(error) || "Hubo un error al obtener los detalles de las compras",
+    });
+  }
+};
+export const pdfCompra = async (req, res) => {
+  try {
+    const _idCompra = req.params._idCompra;
+    console.log({ _idCompra });
+
+    // Buscar la compra
+    const compra = await CompraModel.findById(_idCompra)
+      .populate("proveedor")
+      .populate("sucursal");
+
+    // Buscar los detalles de la compra
+    const detCompras = await DetCompraModel.find({
+      compra: _idCompra,
+    }).populate("producto");
+    console.log({ compra, detCompras });
+    console.log(new Date(compra.createdAt).toISOString());
+    // Calcular el total de la cantidad
+    let totalCantidad = detCompras.reduce(
+      (total, detCompra) => total + detCompra.cantidad,
+      0
+    );
+
+    // Calcular el total de detCompra
+    let totalDetCompra = detCompras.reduce(
+      (total, detCompra) => total + detCompra.total,
+      0
+    );
+
+    // Ahora puedes usar totalCantidad y totalDetCompra en tu documento
+
+    // Resto del código...
+    let fonts = {
+      Roboto: {
+        normal: path.join(__dirname, "../../Roboto/Roboto-Regular.ttf"),
+        bold: path.join(__dirname, "../../Roboto/Roboto-Medium.ttf"),
+        italics: path.join(__dirname, "../../Roboto/Roboto-Italic.ttf"),
+        bolditalics: path.join(
+          __dirname,
+          "../../Roboto/Roboto-MediumItalic.ttf"
+        ),
+      },
+    };
+
+    let printer = new pdfmake(fonts);
+
+    let docDefinition = {
+      content: [
+        {
+          columns: [
+            {
+              // Segunda columna
+              margin: [10, 20, 10, 10], // Añade un margen superior de 20
+              stack: [
+                {
+                  text: "Detalles de la compra",
+                  style: "clientDetailsTitle",
+                },
+                {
+                  text: [
+                    { text: "Proveedor: ", bold: true },
+                    `${compra.proveedor.nombreCompleto}\n`, // Nombre del proveedor
+                    { text: "Correo: ", bold: true },
+                    `${compra.proveedor.email}\n`, // Correo del proveedor
+                    { text: "Número de factura: ", bold: true },
+                    `${compra._id}\n`, // Número de factura
+                    { text: "Fecha: ", bold: true },
+                    `${formatearFecha(
+                      new Date(compra.createdAt).toISOString()
+                    )}\n`, // Fecha de la compra
+                    { text: "Total: ", bold: true },
+                    `$${compra.gastoTotal}\n`, // Total de la compra
+                    { text: "Descuentos: ", bold: true },
+                    "$0\n", // Descuentos (si los hay)
+                  ],
+                  style: "clientDetails",
+                },
+              ],
+            },
+            {
+              image: "src/assets/logo.png",
+              width: 150,
+            },
+          ],
+        },
+        {
+          text: "Detalles de la compra",
+          style: "subheader",
+          alignment: "center",
+        },
+        //   "Esta es una descripción de la factura.",
+        {
+          // Primera columna
+          table: {
+            headerRows: 1,
+            widths: ["*", "auto", 100, "*"],
+            body: [
+              [
+                { text: "Producto", style: "tableHeader" },
+                { text: "Cantidad", style: "tableHeader" },
+                { text: "Precio", style: "tableHeader" },
+                { text: "Total", style: "tableHeader" },
+              ],
+              // Detalles de la compra
+              ...detCompras.map((detCompra) => [
+                `${detCompra.producto.name}`, // Nombre del producto
+                `${detCompra.cantidad}`, // Cantidad
+                `$${detCompra.precioUnidad}`, // Precio por unidad
+                `$${detCompra.total}`, // Total
+              ]),
+              [
+                { text: "Total Final", colSpan: 2 },
+                {},
+                { text: totalCantidad },
+                { text: totalDetCompra },
+              ],
+            ],
+          },
+          layout: {
+            fillColor: function (rowIndex, node, columnIndex) {
+              return rowIndex === 0
+                ? "#BFBFBF"
+                : rowIndex % 2 === 0
+                ? "#D9D9D9"
+                : null;
+            },
+            hLineWidth: function (i, node) {
+              return i === 0 || i === node.table.body.length ? 2 : 1;
+            },
+            vLineWidth: function (i, node) {
+              return 0;
+            },
+            hLineColor: function (i, node) {
+              return i === 0 || i === node.table.body.length ? "black" : "#eee";
+            },
+            paddingLeft: function (i, node) {
+              return 10;
+            },
+            paddingRight: function (i, node) {
+              return 10;
+            },
+            paddingTop: function (i, node) {
+              return 3;
+            },
+            paddingBottom: function (i, node) {
+              return 3;
+            },
+          },
+        },
+      ],
+      styles: {
+        header: {
+          fontSize: 22,
+          bold: true,
+          margin: [0, 20, 0, 10],
+          color: "#007481",
+        },
+        subheader: {
+          fontSize: 18,
+          bold: false,
+          italics: true,
+          margin: [0, 10, 0, 5],
+          color: "#005056",
+        },
+        invoiceTitle: {
+          fontSize: 26,
+          bold: true,
+          alignment: "right",
+          margin: [0, 40, 0, 20],
+          color: "#043263",
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 13,
+          color: "white",
+          fillColor: "#4E5D6C",
+          alignment: "center",
+        },
+
+        clientDetailsTitle: {
+          fontSize: 14,
+          bold: true,
+          color: "#043263",
+          decoration: "underline",
+          margin: [0, 0, 0, 10], // Espacio adicional debajo del título
+        },
+        clientDetails: {
+          margin: [0, 0, 0, 10], // Espacio entre los detalles del proveedor y el contenido siguiente
+        },
+      },
+      defaultStyle: {
+        font: "Roboto",
+      },
+      footer: function (currentPage, pageCount) {
+        return {
+          columns: [
+            "Este documento es válido sin firma y sello.",
+            {
+              text: currentPage.toString() + " de " + pageCount,
+              alignment: "right",
+            },
+          ],
+          margin: [40, 0],
+        };
+      },
+    };
+
+    let pdfDoc = printer.createPdfKitDocument(docDefinition);
+    pdfDoc.pipe(res);
+    pdfDoc.end();
+  } catch (error) {
+    console.log({ error });
+    return res.status(500).json({
+      error: true,
+      msg: "Hubo un error al generar el pdf de compras",
     });
   }
 };

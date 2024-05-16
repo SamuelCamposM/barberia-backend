@@ -92,6 +92,7 @@ export const editarUsuario = async ({ data, eliminados }) => {
       ...data,
       sucursal: data?.sucursal?._id,
     };
+    console.log(usuario);
     // ENCRIPTAR password
     const salt = bcryptjs.genSaltSync();
     const password =

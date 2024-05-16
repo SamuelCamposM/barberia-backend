@@ -14,3 +14,4 @@ export * from "./usuario";
 export * from "./compra";  
 export * from "./venta";  
 export * from "./cita";  
+export * from "./cierreCaja";  

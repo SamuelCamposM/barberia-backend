@@ -5,7 +5,7 @@ export const validarToken = (req, res, next = response) => {
   if (!token) {
     return res.status(401).json({
       error: true,
-      msg: String(error) || "No hay token",
+      msg: "No hay token",
     });
   }
   try {

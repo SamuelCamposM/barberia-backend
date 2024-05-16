@@ -1,30 +1,39 @@
-// import { VentaSchema } from "./VentaSchema";
-// import { DetVentaModel } from "../DetVenta";
-// import { StockModel } from "../Stock";
+import { CierreCajaModel } from "../CierreCaja";
+import { VentaSchema } from "./VentaSchema";
 
-// VentaSchema.post("findOneAndUpdate", async function (doc) {
-//   if (doc.estado === "FINALIZADA") {
-//     const detVentas = await DetVentaModel.find({ venta: doc._id });
-
-//     for (let detVenta of detVentas) {
-//       const stock = await StockModel.findOne({
-//         sucursal: doc.sucursal,
-//         producto: detVenta.producto,
-//       });
-
-//       if (stock) {
-//         // Si el stock ya existe, actualizamos la cantidad
-//         stock.cantidad += detVenta.cantidad;
-//         await stock.save();
-//       } else {
-//         // Si el stock no existe, creamos un nuevo registro
-//         const newStock = new StockModel({
-//           sucursal: doc.sucursal,
-//           producto: detVenta.producto,
-//           cantidad: detVenta.cantidad,
-//         });
-//         await newStock.save();
-//       }
-//     }
-//   }
-// });
+VentaSchema.post("save", async function (doc) {
+  // Buscar el cierre de caja del día para la sucursal específica
+  let cierre = await CierreCajaModel.findOne({
+    fecha: {
+      $gte: new Date().setHours(0, 0, 0, 0),
+      $lt: new Date().setHours(23, 59, 59, 999),
+    },
+    sucursal: doc.sucursal,
+  });
+  if (cierre) {
+    // Si existe un cierre de caja para el día, actualizarlo
+    if (doc.estado === true) {
+      cierre.totalVentas += doc.gastoTotal;
+      cierre.totalDinero += doc.gastoTotal;
+    } else {
+      cierre.totalVentas -= doc.gastoTotal;
+      cierre.totalDinero -= doc.gastoTotal;
+    }
+    await cierre.save();
+  } else {
+    // Si no existe un cierre de caja para el día, crear uno nuevo
+    if (doc.estado === true) {
+      await CierreCajaModel.create({
+        sucursal: doc.sucursal,
+        totalVentas: doc.gastoTotal,
+        totalDinero: doc.gastoTotal,
+      });
+    } else {
+      await CierreCajaModel.create({
+        sucursal: doc.sucursal,
+        totalVentas: -doc.gastoTotal,
+        totalDinero: -doc.gastoTotal,
+      });
+    }
+  }
+});
