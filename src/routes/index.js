@@ -4,7 +4,7 @@ export * from "./depto";
 export * from "./marca";
 export * from "./mensajes";
 export * from "./municipio";
-export * from "./pages";
+export * from "./page";
 export * from "./producto";
 export * from "./sucursal";
 export * from "./usuario";

@@ -152,7 +152,7 @@ export const searchProductoForVenta = async (req, res = response) => {
 };
 
 export const getProductoStock = async (req, res = response) => {
-  const { _id } = req.body; 
+  const { _id } = req.body;
   try {
     const response = await ProductoModel.findOne({ _id })
       .populate({
@@ -193,7 +193,7 @@ export const getProductoStock = async (req, res = response) => {
 // SOCKET
 export const agregarProducto = async (data) => {
   try {
-    const { detComprasData, ...restProducto } = data;
+    const { ...restProducto } = data;
 
     // Adaptar el objeto item al esquema de Compra
     const producto = {
@@ -227,14 +227,14 @@ export const editarProducto = async ({ data, eliminados }) => {
       await deleteFile(element);
     });
 
-    const { detComprasData, ...restProducto } = data;
+    const { ...restProducto } = data;
 
     // Adaptar el objeto item al esquema de Compra
     const producto = {
       ...restProducto,
       rUsuario: data.rUsuario._id,
       eUsuario: data.eUsuario._id,
-    }; 
+    };
     await ProductoModel.findOneAndUpdate({ _id: data._id }, producto, {
       new: true,
     });

@@ -5,7 +5,7 @@ export * from "./marca";
 export * from "./mensajes/chatSocket";
 export * from "./mensajes/mensajes";
 export * from "./municipio";
-export * from "./pages/pages";
+export * from "./pages/page";
 export * from "./pages/pageSocket";
 export * from "./producto";
 export * from "./proveedor";

@@ -1,6 +1,6 @@
-import { Schema, model } from "mongoose";
-import { roles } from "../helpers/usuarioProps";
-const PageSchema = new Schema(
+import { Schema } from "mongoose";
+import { roles } from "../../helpers";
+export const PageSchema = new Schema(
   {
     componente: {
       type: String,
@@ -9,18 +9,23 @@ const PageSchema = new Schema(
     nombre: {
       type: String,
       required: true,
+      unique: true,
     },
     icono: {
       type: String,
       required: true,
     },
-    categoriaPadre: {
-      type: Schema.Types.ObjectId,
-      ref: "Page",
+    padre: {
+      type: String,
+    },
+    tipo: {
+      type: String,
+      enum: ["SECCION", "ITEM"],
+      default: "ITEM",
     },
     orden: {
       type: Number,
-      required: 1,
+      required: true,
     },
     delete: {
       type: [String],
@@ -47,8 +52,15 @@ const PageSchema = new Schema(
       enum: roles,
       default: ["GERENTE"],
     },
+    rUsuario: {
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
+      required: true,
+    },
+    eUsuario: {
+      type: Schema.Types.ObjectId,
+      ref: "Usuario",
+    },
   },
   { timestamps: true }
 );
-
-export const PageModel = model("Page", PageSchema);

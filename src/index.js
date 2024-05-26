@@ -64,7 +64,7 @@ app.use(express.static("public"));
 //ROUTER
 app.use("/api/auth", authRouter);
 app.use("/api/mensajes", mensajesRouter);
-app.use("/api/pages", pagesRouter);
+app.use("/api/page", pagesRouter);
 app.use("/api/depto", deptoRouter);
 app.use("/api/municipio", municipioRouter);
 app.use("/api/sucursal", sucursalRouter);

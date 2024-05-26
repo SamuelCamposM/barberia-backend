@@ -1,5 +1,5 @@
 export * from "./chat";
-export * from "./menu";
+export * from "./page";
 export * from "./depto";
 export * from "./municipio";
 export * from "./sucursal";
