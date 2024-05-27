@@ -9,8 +9,7 @@ export const agregarPage = async (data) => {
     const page = {
       ...restPage,
       rUsuario: restPage.rUsuario._id,
-      eUsuario: null,
-      component: Seccion,
+      eUsuario: null, 
     };
     const newPage = new PageModel(page);
     await newPage.save();

@@ -37,7 +37,8 @@ export const getPages = async (req, res = response) => {
       .populate({
         path: "eUsuario",
         select: ["_id", "dui", "name", "lastname"], // selecciona sólo el campo 'name' y excluye el campo '_id'
-      });
+      })
+      .sort("nombre");
     // sel ;
     console.log(pages);
     res.status(200).json({
